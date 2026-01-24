@@ -5,32 +5,23 @@
 [![CI](https://github.com/rohitg00/skillkit/actions/workflows/ci.yml/badge.svg)](https://github.com/rohitg00/skillkit/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-## One CLI. 17 AI Agents. Zero Lock-in.
+## Supercharge Every AI Coding Agent
 
-**Write skills once, use everywhere.** SkillKit is the universal platform that lets your AI coding skills work across Claude Code, Cursor, Codex, Windsurf, GitHub Copilot, and 12 more agents.
+**Give your AI agents new abilities with portable, reusable skills.** Install from a curated marketplace, create your own, and use them across Claude Code, Cursor, Codex, Windsurf, GitHub Copilot, and 12 more agents.
+
+> **What are AI Agent Skills?** Skills are instruction files that teach AI coding agents how to handle specific tasks - like processing PDFs, following React best practices, or enforcing security patterns. Think of them as plugins for your AI assistant.
 
 ```bash
 npm install -g skillkit
 ```
 
-## What's New in v1.6.0
+## Why SkillKit?
 
-- **Methodology Framework**: 5 ready-to-use development frameworks (Agile, TDD, DevOps, Security-First, Documentation-First) with 13 specialized skills
-- **Hooks System**: Event-driven skill triggers - auto-activate on git commits, file changes, builds, tests, deployments
-- **Agent Orchestration**: Multi-agent team coordination with leader/teammate roles and task assignment
-- **Plan System**: Structured plan creation with validation and execution - parse, validate, and execute development plans
-- **Slash Commands**: Generate agent-native commands from natural language for all 17 AI agents
-- **Enhanced TUI**: New Methodology (o) and Plan (n) screens with improved navigation
+**The problem:** You've built amazing skills for Claude Code. Now you want to try Cursor. Or your team uses different agents. Each agent has different formats and directories. Without SkillKit, you either rewrite everything, lock yourself into one agent, or give up on skills entirely.
 
-## The Problem
+**The solution:** SkillKit translates skills between all 17 agents automatically. Write once, use everywhere.
 
-You've built amazing skills for Claude Code. Now you want to try Cursor. Or your team uses different agents. Your options:
-
-1. **Rewrite everything** - each agent has different formats, directories, and conventions
-2. **Pick one agent** - lock yourself in, miss out on innovations
-3. **Give up on skills** - lose the productivity gains
-
-## The Solution
+## See It In Action
 
 ```bash
 # Install a skill for ALL your agents at once
@@ -59,6 +50,14 @@ skillkit recommend
 | **Context Sync** | Configure each agent separately | One config, synced everywhere |
 | **Session Memory** | Knowledge dies with each session | Persistent learning across agents |
 | **Skill Testing** | Hope it works | Test framework with assertions |
+
+## What's New in v1.6
+
+- **Methodology Framework**: 5 ready-to-use frameworks (Agile, TDD, DevOps, Security-First, Documentation-First)
+- **Hooks System**: Event-driven skill triggers - auto-activate on commits, file changes, builds
+- **Agent Orchestration**: Multi-agent team coordination with leader/teammate roles
+- **Plan System**: Parse, validate, and execute structured development plans
+- **Slash Commands**: Generate agent-native `/commands` from natural language
 
 ## 5-Minute Quick Start
 
@@ -420,16 +419,6 @@ enabledSkills:
 disabledSkills:
   - deprecated-skill
 ```
-
-## Why SkillKit Exists
-
-AI coding agents are amazing, but the ecosystem is fragmented:
-- **Skills don't transfer** between agents
-- **Knowledge dies** when sessions end
-- **No standard** for skill quality or testing
-- **Manual discovery** of useful skills
-
-SkillKit solves these problems with a universal platform that works across all major AI coding agents.
 
 ## License
 
