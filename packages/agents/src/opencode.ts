@@ -4,12 +4,15 @@ import { homedir } from 'node:os';
 import type { AgentAdapter } from './base.js';
 import { createSkillXml } from './base.js';
 import type { Skill, AgentType } from '@skillkit/core';
+import { AGENT_CONFIG } from '@skillkit/core';
+
+const config = AGENT_CONFIG.opencode;
 
 export class OpenCodeAdapter implements AgentAdapter {
   readonly type: AgentType = 'opencode';
   readonly name = 'OpenCode';
-  readonly skillsDir = '.opencode/skills';
-  readonly configFile = 'AGENTS.md';
+  readonly skillsDir = config.skillsDir;
+  readonly configFile = config.configFile;
 
   generateConfig(skills: Skill[]): string {
     const enabledSkills = skills.filter(s => s.enabled);
@@ -60,8 +63,10 @@ This loads the skill's instructions into context.
 
   async isDetected(): Promise<boolean> {
     const opencodeDir = join(process.cwd(), '.opencode');
-    const globalOpencode = join(homedir(), '.opencode');
+    const globalOpencode = join(homedir(), '.config', 'opencode');
+    const opencodeJson = join(process.cwd(), 'opencode.json');
 
-    return existsSync(opencodeDir) || existsSync(globalOpencode);
+    return existsSync(opencodeDir) || existsSync(globalOpencode) ||
+           existsSync(opencodeJson);
   }
 }

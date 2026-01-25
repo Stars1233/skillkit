@@ -3,12 +3,15 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 import type { AgentAdapter } from './base.js';
 import type { Skill, AgentType } from '@skillkit/core';
+import { AGENT_CONFIG } from '@skillkit/core';
+
+const config = AGENT_CONFIG['gemini-cli'];
 
 export class GeminiCliAdapter implements AgentAdapter {
   readonly type: AgentType = 'gemini-cli';
   readonly name = 'Gemini CLI';
-  readonly skillsDir = '.gemini/skills';
-  readonly configFile = 'GEMINI.md';
+  readonly skillsDir = config.skillsDir;
+  readonly configFile = config.configFile;
 
   generateConfig(skills: Skill[]): string {
     const enabledSkills = skills.filter(s => s.enabled);
@@ -64,7 +67,7 @@ ${JSON.stringify(skillsJson, null, 2)}
     }
 
     if (skillNames.length === 0) {
-      const headerRegex = /^### ([a-z0-9-]+)$/gm;
+      const headerRegex = /^###\s+(.+?)\s*$/gm;
       let match;
       while ((match = headerRegex.exec(content)) !== null) {
         skillNames.push(match[1].trim());

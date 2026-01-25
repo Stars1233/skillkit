@@ -4,12 +4,15 @@ import { homedir } from 'node:os';
 import type { AgentAdapter } from './base.js';
 import { createSkillXml } from './base.js';
 import type { Skill, AgentType } from '@skillkit/core';
+import { AGENT_CONFIG } from '@skillkit/core';
+
+const config = AGENT_CONFIG.roo;
 
 export class RooAdapter implements AgentAdapter {
   readonly type: AgentType = 'roo';
   readonly name = 'Roo Code';
-  readonly skillsDir = '.roo/skills';
-  readonly configFile = 'AGENTS.md';
+  readonly skillsDir = config.skillsDir;
+  readonly configFile = config.configFile;
 
   generateConfig(skills: Skill[]): string {
     const enabledSkills = skills.filter(s => s.enabled);
@@ -68,7 +71,8 @@ ${skillsXml}
   async isDetected(): Promise<boolean> {
     const projectRoo = join(process.cwd(), '.roo');
     const globalRoo = join(homedir(), '.roo');
+    const rooModes = join(process.cwd(), '.roo', 'modes');
 
-    return existsSync(projectRoo) || existsSync(globalRoo);
+    return existsSync(projectRoo) || existsSync(globalRoo) || existsSync(rooModes);
   }
 }

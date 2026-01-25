@@ -1,6 +1,9 @@
 // Types
 export * from './types.js';
 
+// Centralized Agent Configuration (single source of truth)
+export * from './agent-config.js';
+
 // Skills discovery and parsing
 export * from './skills.js';
 
@@ -69,3 +72,6 @@ export * from './audit/index.js';
 
 // Custom Agents Support (Phase 19)
 export * from './agents/index.js';
+
+// Skill Translator (Phase 20 - Cross-Agent Skill Translation)
+export * from './skill-translator.js';
