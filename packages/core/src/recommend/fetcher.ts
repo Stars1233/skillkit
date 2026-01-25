@@ -128,8 +128,8 @@ export async function buildSkillIndex(
     onProgress?.('No skills fetched, using sample index...');
     allSkills.push(...getSampleSkills());
     sources.push({
-      name: 'skillkit-samples',
-      url: 'https://github.com/skillkit/samples',
+      name: 'built-in',
+      url: 'https://github.com/rohitg00/skillkit',
       lastFetched: new Date().toISOString(),
       skillCount: allSkills.length,
     });
@@ -198,7 +198,7 @@ function getSampleSkills(): SkillSummary[] {
     {
       name: 'react-best-practices',
       description: 'Modern React patterns including Server Components, hooks best practices, and performance optimization',
-      source: 'skillkit/samples',
+      source: 'built-in',
       tags: ['react', 'frontend', 'typescript', 'nextjs', 'performance'],
       compatibility: {
         frameworks: ['react', 'nextjs'],
@@ -213,7 +213,7 @@ function getSampleSkills(): SkillSummary[] {
     {
       name: 'tailwind-patterns',
       description: 'Tailwind CSS utility patterns, responsive design, and component styling best practices',
-      source: 'skillkit/samples',
+      source: 'built-in',
       tags: ['tailwind', 'css', 'styling', 'frontend', 'responsive'],
       compatibility: {
         frameworks: [],
@@ -228,7 +228,7 @@ function getSampleSkills(): SkillSummary[] {
     {
       name: 'typescript-strict-patterns',
       description: 'TypeScript strict mode patterns, type safety, and advanced type utilities',
-      source: 'skillkit/samples',
+      source: 'built-in',
       tags: ['typescript', 'types', 'safety', 'patterns'],
       compatibility: {
         frameworks: [],
@@ -243,7 +243,7 @@ function getSampleSkills(): SkillSummary[] {
     {
       name: 'security-best-practices',
       description: 'Security patterns for web applications including XSS prevention, CSRF, and secure headers',
-      source: 'skillkit/samples',
+      source: 'built-in',
       tags: ['security', 'xss', 'csrf', 'headers', 'owasp'],
       compatibility: {
         frameworks: [],
@@ -258,7 +258,7 @@ function getSampleSkills(): SkillSummary[] {
     {
       name: 'testing-patterns',
       description: 'Testing patterns with Vitest/Jest including mocking, assertions, and test organization',
-      source: 'skillkit/samples',
+      source: 'built-in',
       tags: ['vitest', 'jest', 'testing', 'typescript', 'mocking', 'tdd'],
       compatibility: {
         frameworks: [],
