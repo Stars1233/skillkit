@@ -187,9 +187,10 @@ export function SkillGenerator(): React.ReactElement {
     }
   }
 
+  // Focus input only after user interaction, not on initial page load
   useEffect(() => {
-    if (status === LoadingState.IDLE && inputRef.current) {
-      inputRef.current.focus();
+    if (status === LoadingState.SUCCESS && inputRef.current) {
+      inputRef.current.focus({ preventScroll: true });
     }
   }, [status]);
 
