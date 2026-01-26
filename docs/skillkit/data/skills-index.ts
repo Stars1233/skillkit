@@ -1,5 +1,4 @@
-// Single source of truth: marketplace/skills.json
-import skillsData from '../../../marketplace/skills.json';
+import skillsData from './skills.json';
 
 export interface IndexedSkill {
   id: string;

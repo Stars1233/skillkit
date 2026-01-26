@@ -31,7 +31,6 @@ export { PlanCommand } from './plan.js';
 export { CommandCmd } from './command.js';
 export { AICommand } from './ai.js';
 export { AuditCommand } from './audit.js';
-export { PublishCommand } from './publish.js';
 export {
   AgentCommand,
   AgentListCommand,
