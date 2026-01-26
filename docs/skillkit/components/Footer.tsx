@@ -10,19 +10,20 @@ export function Footer(): React.ReactElement {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border py-8 bg-black">
-      <div className="mx-auto max-w-6xl px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+    <footer className="border-t border-border py-6 bg-black">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
           <p className="text-zinc-500 text-xs font-mono">
             &copy; {currentYear} SKILLKIT
           </p>
+          <span className="hidden sm:inline text-zinc-700">•</span>
           <a
             href="https://agentskills.io"
             target="_blank"
             rel="noreferrer"
             className="text-zinc-600 hover:text-zinc-400 text-xs font-mono transition-colors"
           >
-            Built on Agent Skills standard
+            Agent Skills standard
           </a>
         </div>
         <a

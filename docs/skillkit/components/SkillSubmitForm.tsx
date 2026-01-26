@@ -520,11 +520,11 @@ ${form.skillContent.slice(0, 4000)}${form.skillContent.length > 4000 ? '\n...(tr
           ) : null}
 
           {errors.length > 0 && (
-            <div className="flex flex-wrap gap-2 text-xs font-mono text-yellow-500">
+            <div className="space-y-1 text-xs font-mono text-yellow-500">
               {errors.map((error, i) => (
-                <span key={i} className="flex items-center gap-1">
+                <div key={i} className="flex items-center gap-1">
                   <span className="text-yellow-600">•</span> {error}
-                </span>
+                </div>
               ))}
             </div>
           )}
