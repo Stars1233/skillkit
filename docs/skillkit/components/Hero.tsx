@@ -136,27 +136,24 @@ export function Hero(): React.ReactElement {
               Windsurf, GitHub Copilot, and 12 more agents.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-zinc-700 to-zinc-800 rounded opacity-0 group-hover:opacity-100 transition-opacity blur"></div>
-                <button
-                  onClick={copyInstall}
-                  className="relative flex items-center bg-black border border-zinc-700 px-3 py-2 group-hover:border-zinc-600 transition-colors w-full sm:w-auto"
-                >
-                  <span className="text-zinc-500 mr-2 select-none">$</span>
-                  <span className="font-mono text-zinc-100 text-sm">npx skillkit</span>
-                  <span className="ml-3 text-zinc-500 group-hover:text-white transition-colors flex items-center gap-1">
-                    {copied ? (
-                      <>
-                        {CHECK_ICON}
-                        <span className="text-xs text-green-400">Copied!</span>
-                      </>
-                    ) : (
-                      COPY_ICON
-                    )}
-                  </span>
-                </button>
-              </div>
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <button
+                onClick={copyInstall}
+                className="inline-flex items-center bg-black border border-zinc-700 px-3 py-2 hover:border-zinc-500 transition-colors"
+              >
+                <span className="text-zinc-500 mr-2 select-none">$</span>
+                <span className="font-mono text-zinc-100 text-sm">npx skillkit</span>
+                <span className="ml-2 text-zinc-500 hover:text-white transition-colors flex items-center gap-1">
+                  {copied ? (
+                    <>
+                      {CHECK_ICON}
+                      <span className="text-xs text-green-400">Copied!</span>
+                    </>
+                  ) : (
+                    COPY_ICON
+                  )}
+                </span>
+              </button>
               <Button variant="outline" onClick={openGitHub}>
                 GITHUB
               </Button>
