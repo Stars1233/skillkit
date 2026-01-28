@@ -11,7 +11,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/skillkit.svg)](https://www.npmjs.com/package/skillkit)
 [![GitHub Package](https://img.shields.io/badge/GitHub%20Package-@rohitg00/skillkit-blue?logo=github)](https://github.com/rohitg00/skillkit/pkgs/npm/skillkit)
 [![CI](https://github.com/rohitg00/skillkit/actions/workflows/ci.yml/badge.svg)](https://github.com/rohitg00/skillkit/actions/workflows/ci.yml)
-[![Website](https://img.shields.io/badge/Website-skillkit-black)](https://rohitg00.github.io/skillkit/)
+[![Website](https://img.shields.io/badge/Website-agenstskills.com-black)](https://agenstskills.com)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Supercharge Every AI Coding Agent
@@ -32,6 +32,10 @@ npm install -g skillkit
 
 ## See It In Action
 
+<video src="https://raw.githubusercontent.com/rohitg00/skillkit/main/docs/skillkit/public/skillkit-demo.mp4" controls width="100%"></video>
+
+> **Note:** If the video doesn't play above, [watch it here](https://raw.githubusercontent.com/rohitg00/skillkit/main/docs/skillkit/public/skillkit-demo.mp4)
+
 ```bash
 # Install a skill for ALL your agents at once
 skillkit install anthropics/skills --agent claude-code,cursor,windsurf
@@ -45,8 +49,6 @@ skillkit recommend
 # > 87% match: tailwind-v4-patterns
 # > 85% match: nextjs-app-router
 ```
-
-![SkillKit Demo](https://raw.githubusercontent.com/rohitg00/skillkit/main/skillkit.gif)
 
 ## Beautiful CLI Experience
 

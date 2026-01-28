@@ -5,6 +5,7 @@ import { Agents } from './components/Agents';
 import { Footer } from './components/Footer';
 import { SkillGenerator } from './components/SkillGenerator';
 import { SkillSubmitForm } from './components/SkillSubmitForm';
+import { Commands } from './components/Commands';
 
 const GITHUB_ICON = (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -61,6 +62,7 @@ export default function App(): React.ReactElement {
         <Hero />
         <Agents />
         <Features />
+        <Commands />
 
         <section id="skills" className="py-12 border-b border-zinc-800">
           <SkillGenerator />

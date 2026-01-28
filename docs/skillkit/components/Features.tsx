@@ -9,7 +9,7 @@ interface Feature {
 const FEATURES: Feature[] = [
   {
     title: 'Multi-Agent',
-    description: 'Write once, deploy to 17+ AI coding agents automatically.',
+    description: 'Deploy to 17 AI coding agents with one command.',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -17,57 +17,58 @@ const FEATURES: Feature[] = [
     )
   },
   {
-    title: 'Smart Discovery',
-    description: 'AI analyzes your stack and recommends skills.',
+    title: 'Terminal UI',
+    description: 'Beautiful interactive TUI for browsing & installing.',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     )
   },
   {
-    title: 'Persistent Memory',
-    description: 'Save learnings as reusable skills.',
+    title: 'Plugins',
+    description: 'Extend with custom plugins & hooks.',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" />
       </svg>
     )
   },
   {
-    title: 'Team Sync',
-    description: 'Share skills via Git across your team.',
+    title: 'Manifest',
+    description: '.skills file for team-wide consistency.',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     )
   },
   {
-    title: 'Testing',
-    description: 'Built-in framework for skill validation.',
+    title: 'CI/CD',
+    description: 'GitHub, GitLab, CircleCI templates included.',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
       </svg>
     )
   },
   {
-    title: 'Workflows',
-    description: 'Compose multi-step automated pipelines.',
+    title: 'Slash Commands',
+    description: 'Generate /commands for Claude, Cursor & more.',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
       </svg>
     )
   }
 ];
 
 const COMPARISONS = [
-  ['Agents', '1', '17+'],
+  ['Agents', '1', '17'],
   ['Translation', 'Manual', 'Auto'],
-  ['Sharing', 'Copy/paste', 'Git sync'],
-  ['Discovery', 'Forums', 'AI-powered'],
+  ['Sharing', 'Copy/paste', '.skills manifest'],
+  ['Discovery', 'Forums', 'CLI + AI'],
+  ['CI/CD', 'Custom', 'Templates'],
 ] as const;
 
 export function Features(): React.ReactElement {
@@ -82,15 +83,15 @@ export function Features(): React.ReactElement {
             </p>
             <div className="flex gap-6 sm:gap-8">
               <div>
-                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">17+</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">17</div>
                 <div className="text-zinc-600 text-[10px] sm:text-xs font-mono">Agents</div>
               </div>
               <div>
-                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">1</div>
-                <div className="text-zinc-600 text-[10px] sm:text-xs font-mono">Command</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">30+</div>
+                <div className="text-zinc-600 text-[10px] sm:text-xs font-mono">Commands</div>
               </div>
               <div>
-                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">∞</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">15K</div>
                 <div className="text-zinc-600 text-[10px] sm:text-xs font-mono">Skills</div>
               </div>
             </div>

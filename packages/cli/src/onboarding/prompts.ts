@@ -113,6 +113,72 @@ export async function agentMultiselect(options: {
   });
 }
 
+export async function quickAgentSelect(options: {
+  message?: string;
+  agents: string[];
+  lastSelected?: string[];
+}): Promise<{ agents: string[]; method: 'last' | 'all' | 'select' } | symbol> {
+  const { agents, lastSelected = [] } = options;
+  const hasLast = lastSelected.length > 0 && lastSelected.some(a => agents.includes(a));
+
+  const selectOptions: Array<{ value: string; label: string; hint?: string }> = [];
+
+  if (hasLast) {
+    const validLast = lastSelected.filter(a => agents.includes(a));
+    const agentList = validLast.slice(0, 3).map(formatAgent).join(', ');
+    const more = validLast.length > 3 ? ` +${validLast.length - 3}` : '';
+
+    selectOptions.push({
+      value: 'last',
+      label: `Same as last time (Recommended)`,
+      hint: `${agentList}${more}`,
+    });
+  }
+
+  selectOptions.push({
+    value: 'all',
+    label: 'All detected agents',
+    hint: `${agents.length} agent${agents.length !== 1 ? 's' : ''}`,
+  });
+
+  selectOptions.push({
+    value: 'select',
+    label: 'Select specific agents',
+    hint: 'Choose manually',
+  });
+
+  const result = await clack.select({
+    message: options.message || 'Install to',
+    options: selectOptions,
+  });
+
+  if (clack.isCancel(result)) {
+    return result;
+  }
+
+  const method = result as 'last' | 'all' | 'select';
+
+  if (method === 'last') {
+    return { agents: lastSelected.filter(a => agents.includes(a)), method };
+  }
+
+  if (method === 'all') {
+    return { agents, method };
+  }
+
+  const selected = await agentMultiselect({
+    message: 'Select agents',
+    agents,
+    initialValues: lastSelected.length > 0 ? lastSelected : agents,
+  });
+
+  if (clack.isCancel(selected)) {
+    return selected;
+  }
+
+  return { agents: selected as string[], method };
+}
+
 export interface SkillOption {
   name: string;
   description?: string;

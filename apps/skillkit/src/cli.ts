@@ -47,6 +47,15 @@ import {
   AgentTranslateCommand,
   AgentSyncCommand,
   AgentValidateCommand,
+  // New commands (Phase 21)
+  CheckCommand,
+  FindCommand,
+  ManifestCommand,
+  ManifestInitCommand,
+  ManifestAddCommand,
+  ManifestRemoveCommand,
+  ManifestInstallCommand,
+  ManifestGenerateCommand,
 } from '@skillkit/cli';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -107,5 +116,14 @@ cli.register(AgentCreateCommand);
 cli.register(AgentTranslateCommand);
 cli.register(AgentSyncCommand);
 cli.register(AgentValidateCommand);
+
+cli.register(CheckCommand);
+cli.register(FindCommand);
+cli.register(ManifestCommand);
+cli.register(ManifestInitCommand);
+cli.register(ManifestAddCommand);
+cli.register(ManifestRemoveCommand);
+cli.register(ManifestInstallCommand);
+cli.register(ManifestGenerateCommand);
 
 cli.runExit(process.argv.slice(2));

@@ -14,16 +14,17 @@ interface TerminalLine {
 }
 
 const TERMINAL_LINES: TerminalLine[] = [
-  { type: 'cmd', text: 'skillkit init' },
-  { type: 'out', text: '→ Next.js + TypeScript detected' },
+  { type: 'cmd', text: 'skillkit find react' },
+  { type: 'out', text: '  ■ react-patterns     ★★★★★' },
+  { type: 'out', text: '  ■ react-testing      ★★★★☆' },
   { type: 'cmd', text: 'skillkit install anthropics/skills' },
-  { type: 'out', text: '→ Installed 3 skills' },
-  { type: 'cmd', text: 'skillkit sync --all' },
-  { type: 'out', text: '  .claude/skills/' },
-  { type: 'out', text: '  .cursor/skills/' },
-  { type: 'out', text: '  .windsurf/skills/' },
-  { type: 'cmd', text: 'skillkit translate --to codex,copilot' },
-  { type: 'out', text: '→ 2 formats generated' },
+  { type: 'out', text: '→ 3 skills → 5 agents' },
+  { type: 'cmd', text: 'skillkit ui' },
+  { type: 'out', text: '→ Launching TUI...' },
+  { type: 'cmd', text: 'skillkit check' },
+  { type: 'out', text: '  ✓ All skills up to date' },
+  { type: 'cmd', text: 'skillkit manifest install' },
+  { type: 'out', text: '→ 12 skills from .skills' },
 ];
 
 const FADE_ANIMATION_STYLES = `
@@ -123,7 +124,7 @@ export function Hero(): React.ReactElement {
           <div className="animate-fade-in">
             <div className="inline-flex items-center space-x-2 border border-zinc-800 bg-zinc-900/50 px-2 py-0.5 mb-3 backdrop-blur-sm">
               <span className="flex h-1.5 w-1.5 bg-white rounded-full"></span>
-              <span className="text-xs font-mono text-zinc-400">v1.7.1</span>
+              <span className="text-xs font-mono text-zinc-400">v1.7.5</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-3 font-mono">
@@ -132,8 +133,8 @@ export function Hero(): React.ReactElement {
             </h1>
 
             <p className="text-sm text-zinc-400 mb-5 max-w-lg font-mono leading-relaxed">
-              Portable, reusable skills that work across Claude Code, Cursor, Codex,
-              Windsurf, GitHub Copilot, and 12 more agents.
+              One CLI to install, sync, and manage skills across Claude Code, Cursor,
+              Windsurf, Copilot, and 13 more agents. 15,000+ skills ready to use.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mb-4">
