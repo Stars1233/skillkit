@@ -52,14 +52,7 @@ skillkit recommend
 
 SkillKit features a polished, interactive CLI with visual feedback:
 
-```
-    ███████╗██╗  ██╗██╗██╗     ██╗     ██╗  ██╗██╗████████╗
-    ██╔════╝██║ ██╔╝██║██║     ██║     ██║ ██╔╝██║╚══██╔══╝
-    ███████╗█████╔╝ ██║██║     ██║     █████╔╝ ██║   ██║
-    ╚════██║██╔═██╗ ██║██║     ██║     ██╔═██╗ ██║   ██║
-    ███████║██║  ██╗██║███████╗███████╗██║  ██╗██║   ██║
-    ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝
-```
+![SkillKit Interactive CLI](docs/img/inital-command.png)
 
 - **Adaptive Logo** - Full ASCII art on wide terminals, compact on narrow
 - **Agent Icons** - Visual indicators: ⟁ Claude · ◫ Cursor · ◎ Codex · ✦ Gemini · ⬡ OpenCode
