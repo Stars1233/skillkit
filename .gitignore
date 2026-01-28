@@ -64,3 +64,4 @@ skillkit.yaml
 # Project documentation (not for version control)
 CLAUDE.md
 prd.md
+.vercel
