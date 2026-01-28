@@ -14,7 +14,7 @@ import {
   getAgentIcon,
   isCancel,
   spinner,
-  agentMultiselect,
+  quickAgentSelect,
   skillMultiselect,
   selectInstallMethod,
   confirm,
@@ -197,20 +197,15 @@ export class InstallCommand extends Command {
         // Explicitly specified agents
         targetAgents = this.agent as AgentType[];
       } else if (isInteractive) {
-        // Interactive agent selection
         const allAgentTypes = getAllAdapters().map(a => a.type);
-        const detectedAgent = await detectAgent();
-
-        // Get last selected agents or use detected
         const lastAgents = getLastAgents();
-        const initialAgents = lastAgents.length > 0
-          ? lastAgents.filter(a => allAgentTypes.includes(a as AgentType))
-          : [detectedAgent];
 
-        const agentResult = await agentMultiselect({
-          message: 'Install to which agents?',
+        step(`Detected ${allAgentTypes.length} agents`);
+
+        const agentResult = await quickAgentSelect({
+          message: 'Install to',
           agents: allAgentTypes,
-          initialValues: initialAgents,
+          lastSelected: lastAgents,
         });
 
         if (isCancel(agentResult)) {
@@ -218,7 +213,7 @@ export class InstallCommand extends Command {
           return 0;
         }
 
-        targetAgents = agentResult as AgentType[];
+        targetAgents = (agentResult as { agents: string[] }).agents as AgentType[];
 
         // Save selection for next time
         saveLastAgents(targetAgents);

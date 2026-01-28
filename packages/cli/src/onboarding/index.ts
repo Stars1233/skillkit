@@ -38,6 +38,7 @@ export {
   confirm,
   select,
   agentMultiselect,
+  quickAgentSelect,
   skillMultiselect,
   groupMultiselect,
   stepTrail,
@@ -83,7 +84,7 @@ import {
   getLastAgents,
 } from './preferences.js';
 
-let VERSION = '1.7.5';
+let VERSION = '1.7.6';
 let AGENT_COUNT = 17;
 
 export function setVersion(version: string): void {

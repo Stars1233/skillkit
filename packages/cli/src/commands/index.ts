@@ -41,3 +41,14 @@ export {
   AgentSyncCommand,
   AgentValidateCommand,
 } from './agent.js';
+
+export { CheckCommand } from './check.js';
+export { FindCommand } from './find.js';
+export {
+  ManifestCommand,
+  ManifestInitCommand,
+  ManifestAddCommand,
+  ManifestRemoveCommand,
+  ManifestInstallCommand,
+  ManifestGenerateCommand,
+} from './manifest.js';
