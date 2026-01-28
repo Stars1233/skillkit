@@ -36,7 +36,7 @@ export default function App(): React.ReactElement {
             </a>
             <div className="flex items-center gap-2 sm:gap-4">
               <a
-                href="https://agentskills.com/docs"
+                href="https://agenstskills.com/docs"
                 className="text-zinc-400 hover:text-white transition-colors text-sm font-mono hidden sm:block"
               >
                 Docs
