@@ -36,8 +36,11 @@ export class UICommand extends Command {
       if (err instanceof Error) {
         console.error('Error launching TUI:', err.message);
         console.error('');
-        console.error('Make sure you are running with Bun (>=1.2.0):');
-        console.error('  bun skillkit ui');
+        console.error('The TUI requires Bun runtime (>=1.2.0). Run with:');
+        console.error('  bun $(which skillkit) ui');
+        console.error('');
+        console.error('Or from source directory:');
+        console.error('  bun ./apps/skillkit/dist/cli.js ui');
         console.error('');
         console.error('Install Bun from: https://bun.sh');
       }
