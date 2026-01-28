@@ -464,11 +464,11 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
           {status === LoadingState.LOADING ? (
             <div className="text-zinc-500 font-mono text-sm">Loading content...</div>
           ) : skillContent ? (
-            <pre className="bg-zinc-900 border border-zinc-700 p-6 overflow-x-auto text-sm max-h-[600px] overflow-y-auto">
-              <code className="text-zinc-100 font-mono whitespace-pre-wrap">{skillContent}</code>
+            <pre className="border border-zinc-700 p-6 overflow-x-auto text-sm max-h-[600px] overflow-y-auto" style={{ backgroundColor: '#18181b' }}>
+              <code className="font-mono whitespace-pre-wrap" style={{ color: '#f4f4f5' }}>{skillContent}</code>
             </pre>
           ) : (
-            <div className="bg-zinc-950 border border-zinc-800 p-6">
+            <div className="border border-zinc-800 p-6" style={{ backgroundColor: '#09090b' }}>
               <p className="text-zinc-400 font-mono text-sm mb-4">
                 Skill content not available for direct preview.
               </p>
@@ -488,8 +488,8 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
 
           <div className="mt-6 pt-6 border-t border-zinc-800">
             <p className="text-zinc-500 font-mono text-sm mb-3">Install with SkillKit:</p>
-            <pre className="bg-zinc-950 border border-zinc-800 p-4 text-sm overflow-x-auto">
-              <code className="text-zinc-300 font-mono text-xs sm:text-sm whitespace-nowrap">
+            <pre className="border border-zinc-800 p-4 text-sm overflow-x-auto" style={{ backgroundColor: '#09090b' }}>
+              <code className="font-mono text-xs sm:text-sm whitespace-nowrap" style={{ color: '#d4d4d8' }}>
                 npx skillkit install {selectedSkill.id.split('/').slice(0, 2).join('/')}
               </code>
             </pre>
@@ -595,8 +595,8 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
               <Card key={idx} className="hover:border-zinc-600 transition-colors">
                 <h4 className="text-lg font-semibold text-white mb-2">{pattern.name}</h4>
                 <p className="text-zinc-400 mb-4">{pattern.description}</p>
-                <pre className="bg-zinc-900 border border-zinc-700 p-4 overflow-x-auto text-sm">
-                  <code className="text-zinc-100 font-mono">{pattern.example}</code>
+                <pre className="border border-zinc-700 p-4 overflow-x-auto text-sm" style={{ backgroundColor: '#18181b' }}>
+                  <code className="font-mono" style={{ color: '#f4f4f5' }}>{pattern.example}</code>
                 </pre>
               </Card>
             ))}
@@ -608,16 +608,16 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
                 {ap.badExample && (
                   <div className="mb-4">
                     <div className="text-xs font-mono text-red-400 mb-1 uppercase">Bad</div>
-                    <pre className="bg-red-950/50 border border-red-800/50 p-4 overflow-x-auto text-sm">
-                      <code className="text-red-100 font-mono">{ap.badExample}</code>
+                    <pre className="border border-red-800/50 p-4 overflow-x-auto text-sm" style={{ backgroundColor: '#450a0a' }}>
+                      <code className="font-mono" style={{ color: '#fecaca' }}>{ap.badExample}</code>
                     </pre>
                   </div>
                 )}
                 {ap.goodExample && (
                   <div>
                     <div className="text-xs font-mono text-green-400 mb-1 uppercase">Good</div>
-                    <pre className="bg-green-950/30 border border-green-800/50 p-4 overflow-x-auto text-sm">
-                      <code className="text-green-100 font-mono">{ap.goodExample}</code>
+                    <pre className="border border-green-800/50 p-4 overflow-x-auto text-sm" style={{ backgroundColor: '#052e16' }}>
+                      <code className="font-mono" style={{ color: '#bbf7d0' }}>{ap.goodExample}</code>
                     </pre>
                   </div>
                 )}

@@ -26,8 +26,8 @@ function scrollToTop(e: React.MouseEvent): void {
 
 export default function App(): React.ReactElement {
   return (
-    <div className="min-h-screen bg-background text-zinc-100 font-sans selection:bg-white selection:text-black">
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800 bg-background/90 backdrop-blur-md">
+    <div className="min-h-screen text-zinc-100 font-sans selection:bg-white selection:text-black" style={{ backgroundColor: '#000000' }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800 backdrop-blur-md" style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}>
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between">
             <a href="#" onClick={scrollToTop} className="flex items-center gap-2 cursor-pointer">
@@ -74,7 +74,7 @@ export default function App(): React.ReactElement {
           <SkillGenerator />
         </section>
 
-        <section id="submit" className="py-12 border-b border-zinc-800 bg-surface">
+        <section id="submit" className="py-12 border-b border-zinc-800" style={{ backgroundColor: '#09090b' }}>
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2 font-mono">Submit Your Skill</h2>

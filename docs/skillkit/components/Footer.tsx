@@ -10,7 +10,7 @@ export function Footer(): React.ReactElement {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border py-6 bg-black">
+    <footer className="border-t border-border py-6" style={{ backgroundColor: '#000000' }}>
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-3">
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
           <p className="text-zinc-500 text-xs font-mono">

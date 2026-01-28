@@ -34,7 +34,8 @@ export function Card({
 
   return (
     <div
-      className={`relative bg-black border border-zinc-800 transition-colors duration-300 ${paddingClass} ${clickableClass} ${className}`}
+      className={`relative border border-zinc-800 transition-colors duration-300 ${paddingClass} ${clickableClass} ${className}`}
+      style={{ backgroundColor: '#000000' }}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
