@@ -464,8 +464,8 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
           {status === LoadingState.LOADING ? (
             <div className="text-zinc-500 font-mono text-sm">Loading content...</div>
           ) : skillContent ? (
-            <pre className="border border-zinc-700 p-6 overflow-x-auto text-sm max-h-[600px] overflow-y-auto" style={{ backgroundColor: '#18181b' }}>
-              <code className="font-mono whitespace-pre-wrap" style={{ color: '#f4f4f5' }}>{skillContent}</code>
+            <pre className="border border-zinc-700 p-4 sm:p-6 overflow-x-auto text-xs sm:text-sm max-h-[600px] overflow-y-auto max-w-full" style={{ backgroundColor: '#18181b' }}>
+              <code className="font-mono whitespace-pre-wrap break-words" style={{ color: '#f4f4f5' }}>{skillContent}</code>
             </pre>
           ) : (
             <div className="border border-zinc-800 p-6" style={{ backgroundColor: '#09090b' }}>
@@ -488,8 +488,8 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
 
           <div className="mt-6 pt-6 border-t border-zinc-800">
             <p className="text-zinc-500 font-mono text-sm mb-3">Install with SkillKit:</p>
-            <pre className="border border-zinc-800 p-4 text-sm overflow-x-auto" style={{ backgroundColor: '#09090b' }}>
-              <code className="font-mono text-xs sm:text-sm whitespace-nowrap" style={{ color: '#d4d4d8' }}>
+            <pre className="border border-zinc-800 p-3 sm:p-4 text-sm overflow-x-auto max-w-full" style={{ backgroundColor: '#09090b' }}>
+              <code className="font-mono text-xs sm:text-sm break-all sm:break-normal" style={{ color: '#d4d4d8' }}>
                 npx skillkit install {selectedSkill.id.split('/').slice(0, 2).join('/')}
               </code>
             </pre>
@@ -595,8 +595,8 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
               <Card key={idx} className="hover:border-zinc-600 transition-colors">
                 <h4 className="text-lg font-semibold text-white mb-2">{pattern.name}</h4>
                 <p className="text-zinc-400 mb-4">{pattern.description}</p>
-                <pre className="border border-zinc-700 p-4 overflow-x-auto text-sm" style={{ backgroundColor: '#18181b' }}>
-                  <code className="font-mono" style={{ color: '#f4f4f5' }}>{pattern.example}</code>
+                <pre className="border border-zinc-700 p-3 sm:p-4 overflow-x-auto text-xs sm:text-sm max-w-full" style={{ backgroundColor: '#18181b' }}>
+                  <code className="font-mono whitespace-pre-wrap break-words" style={{ color: '#f4f4f5' }}>{pattern.example}</code>
                 </pre>
               </Card>
             ))}
@@ -608,16 +608,16 @@ ${skillContent.slice(0, 4000)}${skillContent.length > 4000 ? '\n...(truncated)' 
                 {ap.badExample && (
                   <div className="mb-4">
                     <div className="text-xs font-mono text-red-400 mb-1 uppercase">Bad</div>
-                    <pre className="border border-red-800/50 p-4 overflow-x-auto text-sm" style={{ backgroundColor: '#450a0a' }}>
-                      <code className="font-mono" style={{ color: '#fecaca' }}>{ap.badExample}</code>
+                    <pre className="border border-red-800/50 p-3 sm:p-4 overflow-x-auto text-xs sm:text-sm max-w-full" style={{ backgroundColor: '#450a0a' }}>
+                      <code className="font-mono whitespace-pre-wrap break-words" style={{ color: '#fecaca' }}>{ap.badExample}</code>
                     </pre>
                   </div>
                 )}
                 {ap.goodExample && (
                   <div>
                     <div className="text-xs font-mono text-green-400 mb-1 uppercase">Good</div>
-                    <pre className="border border-green-800/50 p-4 overflow-x-auto text-sm" style={{ backgroundColor: '#052e16' }}>
-                      <code className="font-mono" style={{ color: '#bbf7d0' }}>{ap.goodExample}</code>
+                    <pre className="border border-green-800/50 p-3 sm:p-4 overflow-x-auto text-xs sm:text-sm max-w-full" style={{ backgroundColor: '#052e16' }}>
+                      <code className="font-mono whitespace-pre-wrap break-words" style={{ color: '#bbf7d0' }}>{ap.goodExample}</code>
                     </pre>
                   </div>
                 )}
