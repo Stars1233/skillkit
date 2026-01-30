@@ -11,8 +11,10 @@ const COMMAND_GROUPS: CommandGroup[] = [
     commands: [
       { cmd: '', desc: 'Launch interactive TUI' },
       { cmd: 'install <repo>', desc: 'Install from GitHub' },
-      { cmd: 'recommend', desc: 'Get suggestions for your project' },
+      { cmd: 'add <repo>', desc: 'Alias for install' },
+      { cmd: 'recommend', desc: 'Smart suggestions' },
       { cmd: 'find <query>', desc: 'Search 15K+ skills' },
+      { cmd: 'marketplace', desc: 'Browse skills' },
     ],
   },
   {
@@ -22,33 +24,63 @@ const COMMAND_GROUPS: CommandGroup[] = [
       { cmd: 'sync', desc: 'Deploy to all agents' },
       { cmd: 'translate --to <agent>', desc: 'Convert formats' },
       { cmd: 'update', desc: 'Update all skills' },
+      { cmd: 'remove <skill>', desc: 'Remove a skill' },
+      { cmd: 'status', desc: 'Show skill status' },
     ],
   },
   {
     name: 'Mesh',
     commands: [
-      { cmd: 'mesh init', desc: 'Initialize mesh network' },
+      { cmd: 'mesh init', desc: 'Initialize network' },
       { cmd: 'mesh discover', desc: 'Find hosts on LAN' },
-      { cmd: 'message send', desc: 'Send to another agent' },
+      { cmd: 'mesh add <host>', desc: 'Add a host' },
+      { cmd: 'mesh security init', desc: 'Setup encryption' },
+      { cmd: 'mesh peer trust', desc: 'Trust a peer' },
+      { cmd: 'mesh health', desc: 'Check host health' },
+    ],
+  },
+  {
+    name: 'Message',
+    commands: [
+      { cmd: 'message send', desc: 'Send to agent' },
       { cmd: 'message inbox', desc: 'View inbox' },
+      { cmd: 'message read <id>', desc: 'Read message' },
+      { cmd: 'message reply <id>', desc: 'Reply to message' },
+      { cmd: 'message archive', desc: 'Archive messages' },
+      { cmd: 'message sent', desc: 'View sent' },
+    ],
+  },
+  {
+    name: 'Memory',
+    commands: [
+      { cmd: 'memory status', desc: 'View memory status' },
+      { cmd: 'memory search <q>', desc: 'Search learnings' },
+      { cmd: 'memory compress', desc: 'Compress observations' },
+      { cmd: 'memory export', desc: 'Export as skill' },
+      { cmd: 'memory reinforce', desc: 'Boost memory' },
+      { cmd: 'memory --global', desc: 'Global memory' },
     ],
   },
   {
     name: 'Team',
     commands: [
       { cmd: 'manifest init', desc: 'Create .skills file' },
+      { cmd: 'team init', desc: 'Initialize team' },
       { cmd: 'team share', desc: 'Share via Git' },
       { cmd: 'publish', desc: 'Submit to marketplace' },
       { cmd: 'cicd init', desc: 'CI/CD templates' },
+      { cmd: 'team sync', desc: 'Sync team skills' },
     ],
   },
   {
     name: 'Advanced',
     commands: [
-      { cmd: 'primer', desc: 'Generate CLAUDE.md from code' },
-      { cmd: 'agent translate', desc: 'Batch convert agents' },
-      { cmd: 'command generate', desc: 'Create /slash commands' },
-      { cmd: 'memory export', desc: 'Save session learnings' },
+      { cmd: 'primer', desc: 'Generate CLAUDE.md' },
+      { cmd: 'agent translate', desc: 'Batch convert' },
+      { cmd: 'command generate', desc: 'Create /commands' },
+      { cmd: 'context init', desc: 'Project context' },
+      { cmd: 'workflow run', desc: 'Run workflow' },
+      { cmd: 'test', desc: 'Test skills' },
     ],
   },
 ];
@@ -85,19 +117,19 @@ export function Commands(): React.ReactElement {
           })}
         </div>
 
-        <div className="border border-zinc-800 bg-black/50 p-2 sm:p-4 font-mono text-[10px] sm:text-xs">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
+        <div className="border border-zinc-800 bg-black/50 p-3 sm:p-4 font-mono text-[10px] sm:text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 sm:gap-2">
             {group.commands.map((c) => (
               <div
                 key={c.cmd || 'tui'}
-                className="flex items-center gap-2 p-1.5 sm:p-2 hover:bg-zinc-900/50 transition-colors rounded"
+                className="flex items-center gap-2 p-2 hover:bg-zinc-900/50 transition-colors rounded group"
               >
-                <span className="text-zinc-600">$</span>
-                <span className="text-white text-[10px] sm:text-xs">
+                <span className="text-zinc-700 group-hover:text-zinc-500">$</span>
+                <code className="text-white text-[10px] sm:text-xs whitespace-nowrap">
                   {c.cmd ? `skillkit ${c.cmd}` : 'npx skillkit@latest'}
-                </span>
-                <span className="text-zinc-600 ml-auto">→</span>
-                <span className="text-zinc-500 truncate max-w-[80px] sm:max-w-none">{c.desc}</span>
+                </code>
+                <span className="text-zinc-700 ml-auto hidden sm:inline">→</span>
+                <span className="text-zinc-500 text-[9px] sm:text-[11px] hidden sm:inline">{c.desc}</span>
               </div>
             ))}
           </div>

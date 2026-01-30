@@ -37,6 +37,22 @@ for pkg in "${PACKAGES[@]}"; do
 done
 
 echo ""
+echo "Updating hardcoded versions in website..."
+
+HERO_FILE="docs/skillkit/components/Hero.tsx"
+if [ -f "$HERO_FILE" ]; then
+  sed -i '' "s/v[0-9]\+\.[0-9]\+\.[0-9]\+<\/span>/v$VERSION<\/span>/" "$HERO_FILE"
+  echo "✓ Updated $HERO_FILE"
+fi
+
+APP_FILE="docs/skillkit/App.tsx"
+if [ -f "$APP_FILE" ]; then
+  sed -i '' "s/>v[0-9]\+\.[0-9]\+\.[0-9]\+<\/span>/>v$VERSION<\/span>/" "$APP_FILE"
+  sed -i '' "s/\">[0-9]\+\.[0-9]\+\.[0-9]\+<\/span>/\">$VERSION<\/span>/" "$APP_FILE"
+  echo "✓ Updated $APP_FILE"
+fi
+
+echo ""
 echo "All packages updated to version $VERSION"
 echo ""
 echo "Next steps:"

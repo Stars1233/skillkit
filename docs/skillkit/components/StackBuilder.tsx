@@ -13,18 +13,38 @@ const POPULAR_STACKS = [
   },
   {
     name: 'AI/ML Development',
-    skills: ['python', 'langchain', 'openai', 'embeddings'],
+    skills: ['python', 'langchain', 'openai', 'embeddings', 'llm'],
     icon: '🤖',
   },
   {
     name: 'DevOps & Cloud',
-    skills: ['docker', 'kubernetes', 'terraform', 'github-actions'],
+    skills: ['docker', 'kubernetes', 'terraform', 'github-actions', 'kubernetes-mcp'],
     icon: '☁️',
   },
   {
     name: 'Mobile Development',
-    skills: ['react-native', 'expo', 'ios', 'android'],
+    skills: ['react-native', 'expo', 'ios', 'android', 'swift'],
     icon: '📱',
+  },
+  {
+    name: 'Backend & API',
+    skills: ['nodejs', 'express', 'graphql', 'rest', 'nestjs'],
+    icon: '🔧',
+  },
+  {
+    name: 'Security',
+    skills: ['security', 'auth', 'oauth', 'jwt', 'vulnerability'],
+    icon: '🔒',
+  },
+  {
+    name: 'Data Engineering',
+    skills: ['sql', 'postgres', 'redis', 'elasticsearch', 'kafka'],
+    icon: '📊',
+  },
+  {
+    name: 'Web3 & Blockchain',
+    skills: ['solidity', 'ethereum', 'web3', 'smart-contract'],
+    icon: '⛓️',
   },
 ];
 
@@ -186,42 +206,39 @@ export function StackBuilder(): React.ReactElement {
             )}
           </div>
 
-          <div className="lg:w-80 lg:flex-shrink-0">
-            <div className="lg:sticky lg:top-20 bg-zinc-900/50 border border-zinc-800 p-3 sm:p-4">
-              <div className="text-xs font-mono text-zinc-500 uppercase tracking-wider mb-3">
-                Install Command
-              </div>
+          <div className="lg:w-72 lg:flex-shrink-0">
+            <div className="lg:sticky lg:top-20 bg-zinc-900/30 border border-zinc-800 p-3">
               {stack.length > 0 ? (
                 <>
-                  <pre className="bg-black border border-zinc-800 p-3 overflow-x-auto text-xs mb-3">
-                    <code className="font-mono text-green-400 whitespace-pre-wrap break-all">
+                  <pre className="bg-black/50 p-2 overflow-x-auto text-[11px] mb-2">
+                    <code className="font-mono text-zinc-300 whitespace-pre-wrap break-all">
                       {generateInstallCommand()}
                     </code>
                   </pre>
                   <button
                     onClick={copyCommand}
-                    className="w-full bg-white text-black py-2 font-mono text-sm hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-zinc-800 text-zinc-300 py-1.5 font-mono text-xs hover:bg-zinc-700 hover:text-white transition-colors flex items-center justify-center gap-1.5 border border-zinc-700"
                   >
                     {copied ? (
                       <>
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        COPIED!
+                        Copied
                       </>
                     ) : (
                       <>
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
-                        COPY COMMAND
+                        Copy
                       </>
                     )}
                   </button>
                 </>
               ) : (
-                <div className="text-zinc-600 text-xs font-mono text-center py-6">
-                  Add skills to generate install command
+                <div className="text-zinc-600 text-xs font-mono text-center py-4">
+                  Add skills to generate command
                 </div>
               )}
             </div>

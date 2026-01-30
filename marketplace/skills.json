@@ -2,7 +2,7 @@
   "$schema": "./schema.json",
   "version": 1,
   "updatedAt": "2026-01-26",
-  "totalSkills": 15062,
+  "totalSkills": 15064,
   "curatedCollections": 31,
   "skills": [
     {
@@ -352,6 +352,19 @@
         "remotion",
         "video",
         "react"
+      ]
+    },
+    {
+      "id": "rohitg00/skillkit/find-skills",
+      "name": "Find Skills",
+      "description": "Universal skill discovery across all AI agent marketplaces. Search 15K+ skills and install with one command.",
+      "source": "rohitg00/skillkit",
+      "tags": [
+        "meta",
+        "discovery",
+        "marketplace",
+        "skills",
+        "find-skills"
       ]
     },
     {
@@ -33084,6 +33097,20 @@
       "description": "Best practices and patterns for Kubectl",
       "source": "oldwinter/skills",
       "tags": []
+    },
+    {
+      "id": "rohitg00/kubectl-mcp-server/kubernetes-mcp",
+      "name": "Kubernetes MCP Server",
+      "description": "MCP server for Kubernetes with 127+ tools, 8 resources, 8 prompts. Full cluster management via Claude/Cursor.",
+      "source": "rohitg00/kubectl-mcp-server",
+      "tags": [
+        "kubernetes",
+        "mcp",
+        "kubernetes-mcp",
+        "devops",
+        "kubectl",
+        "k8s"
+      ]
     },
     {
       "id": "itsmostafa/aws-agent-skills/cognito",
