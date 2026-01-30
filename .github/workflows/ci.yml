@@ -7,6 +7,60 @@ on:
     branches: [main]
 
 jobs:
+  # Verify all packages have consistent versions
+  version-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check version consistency
+        run: |
+          echo "Checking version consistency across all packages..."
+
+          # Get the main version from apps/skillkit
+          MAIN_VERSION=$(node -p "require('./apps/skillkit/package.json').version")
+          echo "Main version: $MAIN_VERSION"
+
+          # List of all packages to check
+          PACKAGES=(
+            "package.json"
+            "apps/skillkit/package.json"
+            "packages/cli/package.json"
+            "packages/core/package.json"
+            "packages/tui/package.json"
+            "packages/agents/package.json"
+            "packages/memory/package.json"
+            "packages/mesh/package.json"
+            "packages/messaging/package.json"
+            "packages/mcp-memory/package.json"
+            "packages/resources/package.json"
+            "docs/skillkit/package.json"
+            "docs/fumadocs/package.json"
+          )
+
+          FAILED=0
+          for pkg in "${PACKAGES[@]}"; do
+            if [ -f "$pkg" ]; then
+              PKG_VERSION=$(node -p "require('./$pkg').version")
+              if [ "$PKG_VERSION" != "$MAIN_VERSION" ]; then
+                echo "❌ Version mismatch: $pkg has $PKG_VERSION (expected $MAIN_VERSION)"
+                FAILED=1
+              else
+                echo "✓ $pkg: $PKG_VERSION"
+              fi
+            fi
+          done
+
+          if [ $FAILED -eq 1 ]; then
+            echo ""
+            echo "Version mismatch detected!"
+            echo "Run: ./scripts/bump-version.sh $MAIN_VERSION"
+            exit 1
+          fi
+
+          echo ""
+          echo "All packages have consistent version: $MAIN_VERSION"
+
   # Unit tests run on all Node versions
   test:
     runs-on: ubuntu-latest
@@ -78,12 +132,14 @@ jobs:
   # Final status check for branch protection
   ci-success:
     runs-on: ubuntu-latest
-    needs: [test, e2e]
+    needs: [version-check, test, e2e]
     if: always()
     steps:
       - name: Check all jobs passed
         run: |
-          if [[ "${{ needs.test.result }}" != "success" ]] || [[ "${{ needs.e2e.result }}" != "success" ]]; then
+          if [[ "${{ needs.version-check.result }}" != "success" ]] || \
+             [[ "${{ needs.test.result }}" != "success" ]] || \
+             [[ "${{ needs.e2e.result }}" != "success" ]]; then
             echo "One or more jobs failed"
             exit 1
           fi
