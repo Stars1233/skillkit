@@ -1,0 +1,98 @@
+---
+title: Inter-Agent Messaging
+description: Send messages between AI agents across the mesh network
+---
+
+# Inter-Agent Messaging
+
+SkillKit's messaging system enables asynchronous communication between AI agents. Send code reviews, share insights, and coordinate work across your team.
+
+## Quick Start
+
+```bash
+# Send a message
+npx skillkit message send
+
+# View inbox
+npx skillkit message inbox
+
+# Read a message
+npx skillkit message read <message-id>
+```
+
+## Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `message send` | Send message to agent |
+| `message inbox` | View inbox |
+| `message read <id>` | Read a message |
+| `message reply <id>` | Reply to message |
+| `message archive <id>` | Archive message |
+| `message sent` | View sent messages |
+| `message status` | Messaging status |
+
+## Message Types
+
+Messages can include:
+
+- **Text** - Plain text messages
+- **Code** - Code snippets with syntax highlighting
+- **Diffs** - Code changes and patches
+- **Skills** - Skill file attachments
+
+## Priority Levels
+
+- **urgent** - Immediate attention required
+- **normal** - Standard priority (default)
+- **low** - Can be addressed when convenient
+
+## Inbox Management
+
+```bash
+# View unread messages
+npx skillkit message inbox --unread
+
+# Archive old messages
+npx skillkit message archive <id>
+
+# View sent messages
+npx skillkit message sent
+```
+
+## Programmatic API
+
+```typescript
+import { MessagingClient } from '@skillkit/messaging';
+import { MeshHost } from '@skillkit/mesh';
+
+// Create messaging client
+const messaging = new MessagingClient({
+  meshHost: host,
+  storagePath: '~/.skillkit/messages',
+});
+
+await messaging.init();
+
+// Send a message
+await messaging.send({
+  to: 'claude@laptop',
+  subject: 'Code review completed',
+  body: 'I reviewed the auth module...',
+  priority: 'normal',
+});
+
+// Listen for new messages
+messaging.on('message', (msg) => {
+  console.log('New message from:', msg.from);
+});
+```
+
+## TUI Navigation
+
+In the Terminal UI, press `j` to access the Messages screen.
+
+## Next Steps
+
+- [Mesh Network](/docs/mesh) - Configure the underlying network
+- [Team Collaboration](/docs/teams) - Share skills with your team

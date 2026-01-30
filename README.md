@@ -22,6 +22,10 @@
 > **What are AI Agent Skills?** Skills are instruction files that teach AI coding agents how to handle specific tasks - like processing PDFs, following React best practices, or enforcing security patterns. Think of them as plugins for your AI assistant.
 
 ```bash
+# Quick start (no install required)
+npx skillkit@latest
+
+# Or install globally
 npm install -g skillkit
 ```
 
@@ -78,22 +82,17 @@ SkillKit features a polished, interactive CLI with visual feedback:
 ## 5-Minute Quick Start
 
 ```bash
-# 1. Install SkillKit globally
+# Launch interactive TUI (no install required)
+npx skillkit@latest
+
+# Or with specific commands:
+npx skillkit recommend              # Get smart recommendations
+npx skillkit install anthropics/skills  # Install official skills
+npx skillkit sync                   # Sync to your AI agent
+
+# For frequent use, install globally:
 npm install -g skillkit
-
-# 2. Launch the interactive TUI (easiest way to start)
-skillkit
-
-# Or use CLI commands directly:
-
-# 3. Get personalized skill recommendations
-skillkit recommend
-
-# 4. Install skills from the marketplace
-skillkit install anthropics/skills
-
-# 5. Sync to your AI agent
-skillkit sync
+skillkit                            # Launch TUI
 ```
 
 ## Core Features

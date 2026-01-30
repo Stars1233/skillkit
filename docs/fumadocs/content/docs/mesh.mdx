@@ -1,0 +1,118 @@
+---
+title: Mesh Network
+description: Multi-machine agent distribution with secure peer-to-peer communication
+---
+
+# Mesh Network
+
+SkillKit's mesh network enables secure communication between AI agents across multiple machines. Share skills, synchronize memory, and collaborate across your development environment.
+
+## Quick Start
+
+```bash
+# Initialize mesh on your machine
+npx skillkit mesh init
+
+# Discover other hosts on your LAN
+npx skillkit mesh discover
+
+# Add a specific host
+npx skillkit mesh add 192.168.1.100
+```
+
+## Security
+
+The mesh network uses enterprise-grade security:
+
+- **Ed25519** - Peer identity and message signing
+- **XChaCha20-Poly1305** - End-to-end message encryption
+- **TLS 1.3** - Transport layer security
+- **JWT with EdDSA** - Authentication tokens
+
+### Initialize Security
+
+```bash
+# Generate encryption keys
+npx skillkit mesh security init
+
+# Check security status
+npx skillkit mesh security status
+```
+
+### Peer Trust Management
+
+```bash
+# Trust a peer by fingerprint
+npx skillkit mesh peer trust abc123def456
+
+# Revoke a peer's trust
+npx skillkit mesh peer revoke abc123def456
+
+# List trusted peers
+npx skillkit mesh peer list
+```
+
+## Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `mesh init` | Initialize mesh network |
+| `mesh add <address>` | Add a host to mesh |
+| `mesh remove <id>` | Remove a host |
+| `mesh list` | List known hosts |
+| `mesh discover` | Discover hosts on LAN |
+| `mesh health` | Check host health |
+| `mesh status` | Show mesh status |
+| `mesh security init` | Setup encryption keys |
+| `mesh security status` | Show security status |
+| `mesh peer trust <id>` | Trust a peer |
+| `mesh peer revoke <id>` | Revoke peer trust |
+| `mesh peer list` | List trusted peers |
+
+## Security Levels
+
+| Level | Discovery | Transport | Auth | Use Case |
+|-------|-----------|-----------|------|----------|
+| `development` | open | none | none | Local dev |
+| `signed` | signed | optional | optional | Trusted LAN |
+| `secure` (default) | signed | required | required | Production |
+| `strict` | trusted-only | required | mTLS | High security |
+
+## Architecture
+
+The mesh network uses:
+
+1. **UDP Multicast** - LAN discovery with signed announcements
+2. **WebSocket (WSS)** - Real-time bidirectional communication
+3. **HTTPS** - RESTful API for management
+
+All messages are signed and optionally encrypted based on your security level.
+
+## Programmatic API
+
+```typescript
+import { MeshHost, PeerIdentity } from '@skillkit/mesh';
+
+// Generate identity
+const identity = await PeerIdentity.generate();
+
+// Create mesh host
+const host = new MeshHost({
+  hostId: 'my-workstation',
+  identity,
+  security: { mode: 'secure' },
+});
+
+await host.start();
+
+// Send message to peer
+await host.send('peer-fingerprint', {
+  type: 'skill-sync',
+  payload: { skills: ['react-patterns'] },
+});
+```
+
+## Next Steps
+
+- [Inter-Agent Messaging](/docs/messaging) - Send messages between agents
+- [Memory System](/docs/memory) - Share learnings across the mesh
