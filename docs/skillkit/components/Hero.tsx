@@ -16,17 +16,17 @@ interface TerminalLine {
 }
 
 const TERMINAL_LINES: TerminalLine[] = [
-  { type: 'cmd', text: 'skillkit find react' },
-  { type: 'out', text: '  ■ react-patterns     ★★★★★' },
-  { type: 'out', text: '  ■ react-testing      ★★★★☆' },
+  { type: 'cmd', text: 'skillkit primer --analyze-only' },
+  { type: 'out', text: '  → TypeScript, React, Next.js' },
+  { type: 'out', text: '  → vitest, tailwindcss, eslint' },
+  { type: 'cmd', text: 'skillkit primer --all-agents' },
+  { type: 'out', text: '→ Generated 32 instruction files' },
   { type: 'cmd', text: 'skillkit install anthropics/skills' },
   { type: 'out', text: '→ 3 skills → 5 agents' },
-  { type: 'cmd', text: 'skillkit ui' },
-  { type: 'out', text: '→ Launching TUI...' },
-  { type: 'cmd', text: 'skillkit check' },
-  { type: 'out', text: '  ✓ All skills up to date' },
-  { type: 'cmd', text: 'skillkit manifest install' },
-  { type: 'out', text: '→ 12 skills from .skills' },
+  { type: 'cmd', text: 'skillkit translate --to cursor' },
+  { type: 'out', text: '  ✓ Translated to .mdc format' },
+  { type: 'cmd', text: 'skillkit sync' },
+  { type: 'out', text: '→ Synced to 32 agents' },
 ];
 
 const FADE_ANIMATION_STYLES = `
@@ -126,7 +126,7 @@ export function Hero(): React.ReactElement {
           <div className="animate-fade-in">
             <div className="inline-flex items-center space-x-2 border border-zinc-800 bg-zinc-900/50 px-2 py-0.5 mb-3 backdrop-blur-sm">
               <span className="flex h-1.5 w-1.5 bg-white rounded-full"></span>
-              <span className="text-xs font-mono text-zinc-400">v1.7.5</span>
+              <span className="text-xs font-mono text-zinc-400">v1.7.10</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-3 font-mono">

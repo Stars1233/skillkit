@@ -46,6 +46,7 @@ const sections: DocSection[] = [
         </p>
         <h3 className="text-lg font-semibold text-white mt-6">Core Capabilities</h3>
         <ul className="list-disc list-inside space-y-2 text-zinc-400">
+          <li><span className="text-white">AI Instruction Generation (Primer)</span> - Analyze your codebase and generate customized instruction files for all 32 agents</li>
           <li><span className="text-white">Skill Discovery</span> - Browse 15,000+ skills from marketplace with AI-powered recommendations</li>
           <li><span className="text-white">Cross-Agent Translation</span> - Automatically convert skills between 32 agent-specific formats</li>
           <li><span className="text-white">Team Collaboration</span> - Share skills via .skills manifest files and publish to marketplace</li>
@@ -202,6 +203,15 @@ skillkit manifest add <source> # Add source to manifest
 skillkit manifest install      # Install from manifest
 skillkit publish               # Publish skill to marketplace
 skillkit cicd init             # Setup CI/CD integration`}</CodeBlock>
+
+        <h3 className="text-lg font-semibold text-white mt-6">AI Instruction Generation (Primer)</h3>
+        <CodeBlock>{`skillkit primer                # Analyze codebase, generate for detected agents
+skillkit primer --all-agents   # Generate for all 32 agents
+skillkit primer --agent claude-code,cursor  # Specific agents only
+skillkit primer --analyze-only # Only show codebase analysis
+skillkit primer --dry-run      # Preview without writing files
+skillkit primer --json         # Output analysis as JSON
+skillkit primer --output ./dir # Custom output directory`}</CodeBlock>
 
         <h3 className="text-lg font-semibold text-white mt-6">Advanced</h3>
         <CodeBlock>{`skillkit ui                    # Launch Terminal UI
