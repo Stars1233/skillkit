@@ -1,6 +1,6 @@
 {
   "name": "skillkit-monorepo",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "private": true,
   "description": "Universal skills loader for AI coding agents - Monorepo",
   "type": "module",
