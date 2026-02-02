@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { Command, Option } from 'clipanion';
-import { loadConfig, findAllSkills } from '@skillkit/core';
+import { findAllSkills } from '@skillkit/core';
 import type { AgentType } from '@skillkit/core';
 import { getAdapter, detectAgent, getAllAdapters } from '@skillkit/agents';
 import { getSearchDirs, getAgentConfigPath } from '../helpers.js';
@@ -67,10 +67,9 @@ export class SyncCommand extends Command {
       if (this.agent) {
         agentType = this.agent as AgentType;
       } else if (isInteractive) {
-        // Let user select agent
+        // Let user select agent - always detect, don't rely on default config
         s.start('Detecting agent...');
-        const config = loadConfig();
-        const detected = config.agent || (await detectAgent());
+        const detected = await detectAgent();
         s.stop(`Detected: ${formatAgent(detected)}`);
 
         const allAgents = getAllAdapters().map(a => a.type);
@@ -92,8 +91,8 @@ export class SyncCommand extends Command {
 
         agentType = agentResult as AgentType;
       } else {
-        const config = loadConfig();
-        agentType = config.agent || (await detectAgent());
+        // Non-interactive: always detect, don't rely on default config
+        agentType = await detectAgent();
       }
 
       const adapter = getAdapter(agentType);

@@ -1,5 +1,9 @@
 import { existsSync, mkdirSync, cpSync, rmSync, symlinkSync } from 'node:fs';
 import { join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 import { Command, Option } from 'clipanion';
 import { detectProvider, isLocalPath, getProvider, evaluateSkillDirectory } from '@skillkit/core';
 import type { SkillMetadata, GitProvider, AgentType } from '@skillkit/core';
@@ -42,7 +46,8 @@ export class InstallCommand extends Command {
       ['Install from GitHub', '$0 install owner/repo'],
       ['Install from GitLab', '$0 install gitlab:owner/repo'],
       ['Install from Bitbucket', '$0 install bitbucket:owner/repo'],
-      ['Install specific skills (CI/CD)', '$0 install owner/repo --skills=pdf,xlsx'],
+      ['Install specific skill', '$0 install owner/repo --skill=pdf'],
+      ['Install multiple skills (CI/CD)', '$0 install owner/repo --skills=pdf,xlsx'],
       ['Install all skills non-interactively', '$0 install owner/repo --all'],
       ['Install from local path', '$0 install ./my-skills'],
       ['Install globally', '$0 install owner/repo --global'],
@@ -53,7 +58,7 @@ export class InstallCommand extends Command {
 
   source = Option.String({ required: true });
 
-  skills = Option.String('--skills,-s', {
+  skills = Option.String('--skills,--skill,-s', {
     description: 'Comma-separated list of skills to install (non-interactive)',
   });
 
@@ -143,7 +148,7 @@ export class InstallCommand extends Command {
           }
           console.log('');
           console.log(colors.muted(`Total: ${discoveredSkills.length} skill(s)`));
-          console.log(colors.muted('To install: skillkit install <source> --skills=skill1,skill2'));
+          console.log(colors.muted('To install: skillkit install <source> --skill=name'));
         }
 
         const cleanupPath = result.tempRoot || result.path;
@@ -333,6 +338,21 @@ export class InstallCommand extends Command {
               cpSync(sourcePath, targetPath, { recursive: true, dereference: true });
               if (isSymlinkMode && primaryPath === null) {
                 primaryPath = targetPath;
+              }
+
+              // Auto-install npm dependencies if package.json exists
+              const packageJsonPath = join(targetPath, 'package.json');
+              if (existsSync(packageJsonPath)) {
+                s.stop(`Installed ${skillName} to ${adapter.name}`);
+                s.start(`Installing npm dependencies for ${skillName}...`);
+                try {
+                  await execFileAsync('npm', ['install', '--production'], { cwd: targetPath });
+                  s.stop(`Installed dependencies for ${skillName}`);
+                } catch (npmErr) {
+                  s.stop(colors.warning(`Dependencies failed for ${skillName}`));
+                  console.log(colors.muted('Run manually: npm install in ' + targetPath));
+                }
+                s.start(`Finishing ${skillName} installation...`);
               }
             }
 
