@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillKit API Documentation</title>
+  <meta name="description" content="Interactive API documentation for SkillKit - Skill Discovery API for AI coding agents">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      color: #e4e4e7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      padding: 0 24px;
+      border-bottom: 1px solid #27272a;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-logo {
+      width: 16px;
+      height: 16px;
+      background: white;
+    }
+
+    .topbar-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+      text-decoration: none;
+      letter-spacing: -0.025em;
+    }
+
+    .topbar-sep {
+      color: #3f3f46;
+      font-size: 18px;
+    }
+
+    .topbar-subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #71717a;
+    }
+
+    .topbar-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .topbar-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #71717a;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .topbar-links a:hover { color: white; }
+
+    .topbar-version {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border: 1px solid #27272a;
+      background: rgba(24, 24, 27, 0.5);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #a1a1aa;
+    }
+
+    .topbar-version .dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+    }
+
+    #swagger-ui {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px 64px;
+    }
+
+    /* Dark theme overrides */
+    .swagger-ui .topbar { display: none; }
+
+    .swagger-ui,
+    .swagger-ui .wrapper { background: transparent; }
+
+    .swagger-ui .info { margin: 32px 0 16px; }
+
+    .swagger-ui .info .title {
+      font-family: 'JetBrains Mono', monospace;
+      color: white;
+    }
+
+    .swagger-ui .info .description,
+    .swagger-ui .info .description p {
+      font-family: 'Inter', sans-serif;
+      color: #a1a1aa;
+      font-size: 14px;
+    }
+
+    .swagger-ui .info .description code {
+      background: #18181b;
+      border: 1px solid #27272a;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #e4e4e7;
+      font-size: 13px;
+    }
+
+    .swagger-ui .info .description pre {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .swagger-ui .scheme-container {
+      background: #18181b;
+      border: 1px solid #27272a;
+      box-shadow: none;
+      padding: 12px 16px;
+    }
+
+    .swagger-ui .opblock-tag {
+      color: white;
+      border-bottom: 1px solid #27272a;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .swagger-ui .opblock-tag small { color: #71717a; }
+
+    .swagger-ui .opblock {
+      border-color: #27272a;
+      background: #0f0f0f;
+      box-shadow: none;
+    }
+
+    .swagger-ui .opblock .opblock-summary {
+      border-bottom: 1px solid #27272a;
+    }
+
+    .swagger-ui .opblock .opblock-summary-description {
+      color: #a1a1aa;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .swagger-ui .opblock .opblock-summary-path {
+      color: white;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .swagger-ui .opblock .opblock-section-header {
+      background: #18181b;
+      border-bottom: 1px solid #27272a;
+    }
+
+    .swagger-ui .opblock .opblock-section-header h4 {
+      color: #e4e4e7;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .swagger-ui .opblock-body pre.microlight {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 4px;
+      color: #e4e4e7;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .swagger-ui .opblock.opblock-get {
+      border-color: #27272a;
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .swagger-ui .opblock.opblock-get .opblock-summary-method {
+      background: #166534;
+    }
+
+    .swagger-ui .opblock.opblock-post {
+      border-color: #27272a;
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .swagger-ui .opblock.opblock-post .opblock-summary-method {
+      background: #1e40af;
+    }
+
+    .swagger-ui .btn {
+      border-color: #3f3f46;
+      color: #e4e4e7;
+    }
+
+    .swagger-ui .btn:hover {
+      background: #27272a;
+    }
+
+    .swagger-ui .btn.execute {
+      background: white;
+      color: black;
+      border-color: white;
+    }
+
+    .swagger-ui .btn.execute:hover {
+      background: #e4e4e7;
+    }
+
+    .swagger-ui table thead tr th,
+    .swagger-ui table thead tr td,
+    .swagger-ui .parameter__name,
+    .swagger-ui .parameter__type {
+      color: #a1a1aa;
+    }
+
+    .swagger-ui .parameter__name.required span { color: #ef4444; }
+
+    .swagger-ui table tbody tr td {
+      color: #e4e4e7;
+      border-bottom: 1px solid #1c1c1e;
+    }
+
+    .swagger-ui input[type=text],
+    .swagger-ui textarea,
+    .swagger-ui select {
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      color: #e4e4e7;
+    }
+
+    .swagger-ui .model-box {
+      background: #18181b;
+      border: 1px solid #27272a;
+    }
+
+    .swagger-ui .model { color: #a1a1aa; }
+    .swagger-ui .model-title { color: white; }
+    .swagger-ui .prop-type { color: #22c55e; }
+    .swagger-ui .prop-format { color: #71717a; }
+
+    .swagger-ui section.models {
+      border: 1px solid #27272a;
+      border-radius: 0;
+    }
+
+    .swagger-ui section.models h4 {
+      color: white;
+      border-bottom: 1px solid #27272a;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .swagger-ui section.models .model-container {
+      border-bottom: 1px solid #27272a;
+      background: transparent;
+    }
+
+    .swagger-ui .response-col_status { color: #22c55e; font-family: 'JetBrains Mono', monospace; }
+    .swagger-ui .response-col_description { color: #a1a1aa; }
+
+    .swagger-ui .responses-inner h4,
+    .swagger-ui .responses-inner h5 {
+      color: #e4e4e7;
+    }
+
+    .swagger-ui .filter .operation-filter-input {
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      color: #e4e4e7;
+    }
+
+    .swagger-ui .loading-container .loading::after {
+      color: #71717a;
+    }
+
+    @media (max-width: 768px) {
+      .topbar { padding: 0 16px; }
+      .topbar-sep, .topbar-subtitle { display: none; }
+    }
+
+    @media (prefers-color-scheme: light) {
+      body { background: #0a0a0a; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+        <div class="topbar-logo"></div>
+        <span class="topbar-title">SKILLKIT</span>
+      </a>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-subtitle">API Reference</span>
+    </div>
+    <div class="topbar-links">
+      <span class="topbar-version">
+        <span class="dot"></span>
+        v1.12.0
+      </span>
+      <a href="/">Home</a>
+      <a href="/docs">Docs</a>
+      <a href="https://github.com/rohitg00/skillkit" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    SwaggerUIBundle({
+      url: '/openapi.json',
+      dom_id: '#swagger-ui',
+      deepLinking: true,
+      showExtensions: true,
+      showCommonExtensions: true,
+      defaultModelsExpandDepth: 2,
+      defaultModelExpandDepth: 2,
+      docExpansion: 'list',
+      filter: true,
+      tryItOutEnabled: true,
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      syntaxHighlight: { theme: 'monokai' },
+    });
+  </script>
+</body>
+</html>

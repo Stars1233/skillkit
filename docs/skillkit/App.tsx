@@ -101,6 +101,12 @@ export default function App(): React.ReactElement {
             </div>
             <div className="flex items-center gap-3 sm:gap-4">
               <a
+                href="/api"
+                className="text-zinc-400 hover:text-white transition-colors text-xs sm:text-sm font-mono"
+              >
+                API
+              </a>
+              <a
                 href="https://agenstskills.com/docs"
                 className="text-zinc-400 hover:text-white transition-colors text-xs sm:text-sm font-mono"
               >
