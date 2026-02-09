@@ -44,7 +44,7 @@ describe('E2E: Onboarding UI', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should display all 32 agents', async () => {
+    it('should display all 44 agents', async () => {
       const result = await runCli(['init', '--list']);
       const output = result.stdout + result.stderr;
 
@@ -81,6 +81,18 @@ describe('E2E: Onboarding UI', () => {
         'Qwen',
         'Vercel',
         'Zencoder',
+        'Devin',
+        'Aider',
+        'Cody',
+        'Amazon Q',
+        'Augment',
+        'Replit',
+        'Bolt',
+        'Lovable',
+        'Tabby',
+        'Tabnine',
+        'CodeGPT',
+        'PlayCode',
       ];
 
       for (const agent of agents) {
