@@ -29,7 +29,7 @@
 
   <g transform="translate(890, 58)">
     <rect width="250" height="40" fill="url(#ph-badge)" stroke="#444" stroke-width="1" rx="20"/>
-    <circle cx="28" cy="20" r="14" fill="#da552f"/>
+    <circle cx="28" cy="20" r="14" fill="none" stroke="#666" stroke-width="1.5"/>
     <text x="28" y="25" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="white" text-anchor="middle">P</text>
     <text x="54" y="16" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#888" letter-spacing="1">PRODUCT HUNT</text>
     <text x="54" y="30" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="white">#3 Product of the Day</text>
