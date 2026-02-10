@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Hero } from './components/Hero';
 import { Features } from './components/Features';
 import { Agents } from './components/Agents';
@@ -36,12 +36,48 @@ function scrollToSection(e: React.MouseEvent, sectionId: string): void {
   }
 }
 
+const CA = 'Boecow5w4ga85pWUgSZnjbsZDvaymyL3Sy3PAUeYBAGS';
+
+function CaBanner({ onDismiss }: { onDismiss: () => void }): React.ReactElement {
+  const [copied, setCopied] = useState(false);
+  const truncated = `${CA.slice(0, 6)}...${CA.slice(-4)}`;
+
+  function copyCA(): void {
+    navigator.clipboard.writeText(CA);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[60] border-b border-zinc-800" style={{ backgroundColor: '#0a0a0a' }}>
+      <div className="mx-auto max-w-5xl px-4 flex items-center justify-center gap-2 h-7 text-[11px] font-mono">
+        <span className="text-zinc-500">$SKILLKIT on Bags</span>
+        <span className="text-zinc-700">·</span>
+        <span className="text-zinc-400">CA:</span>
+        <button onClick={copyCA} className="inline-flex items-center gap-1 text-zinc-300 hover:text-white transition-colors cursor-pointer">
+          <span className="hidden sm:inline">{CA}</span>
+          <span className="sm:hidden">{truncated}</span>
+          <svg className="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          {copied && <span className="text-green-400 text-[10px]">Copied!</span>}
+        </button>
+        <button onClick={onDismiss} className="absolute right-3 text-zinc-600 hover:text-zinc-400 transition-colors">
+          ×
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App(): React.ReactElement {
   const stats = useStats();
+  const [showBanner, setShowBanner] = useState(true);
 
   return (
     <div className="min-h-screen text-zinc-100 font-sans selection:bg-white selection:text-black" style={{ backgroundColor: '#000000' }}>
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800 backdrop-blur-md" style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}>
+      {showBanner && <CaBanner onDismiss={() => setShowBanner(false)} />}
+      <nav className={`fixed left-0 right-0 z-50 border-b border-zinc-800 backdrop-blur-md ${showBanner ? 'top-7' : 'top-0'}`} style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}>
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between gap-2">
             <a href="#" onClick={scrollToTop} className="flex items-center gap-2 cursor-pointer">
@@ -138,7 +174,7 @@ export default function App(): React.ReactElement {
         </div>
       </nav>
 
-      <main className="pt-14">
+      <main className={showBanner ? 'pt-[84px]' : 'pt-14'}>
         <Hero version={stats.version || '—'} stars={stats.stars || '—'} />
 
         <div className="border-b border-zinc-800/50 py-2.5" style={{ background: 'linear-gradient(to bottom, rgba(9,9,11,0.95), rgba(0,0,0,1))' }}>
