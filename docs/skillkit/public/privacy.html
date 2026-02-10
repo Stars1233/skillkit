@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — SkillKit</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #09090b; color: #d4d4d8; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.7; }
+    .container { max-width: 640px; margin: 0 auto; padding: 48px 24px; }
+    h1 { color: #fafafa; font-size: 28px; font-weight: 700; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; }
+    .updated { color: #71717a; font-size: 13px; margin-bottom: 32px; }
+    h2 { color: #fafafa; font-size: 18px; font-weight: 600; margin-top: 32px; margin-bottom: 12px; }
+    p { margin-bottom: 16px; font-size: 15px; }
+    ul { margin-bottom: 16px; padding-left: 24px; }
+    li { margin-bottom: 8px; font-size: 15px; }
+    a { color: #fafafa; text-decoration: underline; text-underline-offset: 2px; }
+    a:hover { color: #a1a1aa; }
+    .back { display: inline-block; margin-bottom: 24px; color: #71717a; font-size: 13px; text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+    .back:hover { color: #fafafa; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">&larr; Back to SkillKit</a>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: February 10, 2026</p>
+
+    <h2>Overview</h2>
+    <p>SkillKit ("we", "our", "us") is an open-source CLI tool and Chrome extension for managing AI agent skills. We are committed to protecting your privacy. This policy explains what data we collect (or don't) across all SkillKit products.</p>
+
+    <h2>Chrome Extension — "SkillKit - Save as Skill"</h2>
+    <p>The Chrome extension operates entirely within your browser. It does not collect, transmit, or store any personal data externally.</p>
+    <ul>
+      <li><strong>No data collection:</strong> We do not collect browsing history, page content, personal information, or any other user data.</li>
+      <li><strong>No external requests:</strong> The extension makes zero network requests. All processing (HTML to markdown conversion, SKILL.md generation) happens locally in your browser.</li>
+      <li><strong>No analytics or tracking:</strong> We do not use any analytics, telemetry, or tracking services.</li>
+      <li><strong>Local storage only:</strong> The Chrome storage API is used solely to store user preferences (e.g., default settings) on your device. This data never leaves your browser.</li>
+      <li><strong>Downloads:</strong> Generated skill files are saved to your local filesystem via the Chrome Downloads API. No files are uploaded anywhere.</li>
+    </ul>
+
+    <h2>CLI Tool</h2>
+    <p>The SkillKit CLI runs entirely on your local machine. It does not phone home, collect telemetry, or transmit any data to external servers unless you explicitly use network features (e.g., <code>skillkit install</code> fetches public GitHub repositories).</p>
+
+    <h2>MCP Server</h2>
+    <p>The SkillKit MCP server runs locally and provides skill discovery over the Model Context Protocol. It loads skill data from a bundled JSON file and does not make external network requests or collect user data.</p>
+
+    <h2>Website</h2>
+    <p>The SkillKit website (<a href="https://agenstskills.com">agenstskills.com</a>) is a static site hosted on Vercel. We do not use cookies, analytics trackers, or collect personal information. Vercel may collect standard web server logs (IP address, user agent) as described in their <a href="https://vercel.com/legal/privacy-policy">privacy policy</a>.</p>
+
+    <h2>Third-Party Services</h2>
+    <p>SkillKit does not integrate with any third-party data processors, advertising networks, or analytics services.</p>
+
+    <h2>Data Retention</h2>
+    <p>We do not retain any user data because we do not collect any user data.</p>
+
+    <h2>Changes to This Policy</h2>
+    <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated revision date.</p>
+
+    <h2>Contact</h2>
+    <p>If you have questions about this privacy policy, contact us at <a href="mailto:ghumare64@gmail.com">ghumare64@gmail.com</a>.</p>
+
+    <h2>Open Source</h2>
+    <p>SkillKit is open source under the Apache 2.0 license. You can review all source code at <a href="https://github.com/rohitg00/skillkit">github.com/rohitg00/skillkit</a>.</p>
+  </div>
+</body>
+</html>
