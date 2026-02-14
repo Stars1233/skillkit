@@ -183,13 +183,13 @@ Team members run `skillkit manifest install` and they're in sync.
 
 ### Chrome Extension
 
-Save any webpage as a skill directly from your browser. No server needed.
+Save any webpage as a skill directly from your browser.
 
 1. Build: `pnpm --filter @skillkit/extension build`
 2. Chrome → `chrome://extensions` → Load unpacked → `packages/extension/dist/`
 3. Click the extension icon or right-click → "Save page as Skill"
 
-The extension extracts page content as markdown, generates SKILL.md with auto-detected tags, and downloads it. Then run `skillkit install ~/Downloads/skillkit-skills/my-skill` to deploy to all agents.
+The extension sends the page URL to the SkillKit API for server-side extraction with Turndown, 5-source weighted tag detection, and GitHub URL support. The resulting SKILL.md downloads automatically. Then run `skillkit install ~/Downloads/skillkit-skills/my-skill` to deploy to all agents.
 
 [Extension docs](https://agenstskills.com/docs/chrome-extension)
 

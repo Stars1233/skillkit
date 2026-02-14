@@ -5,7 +5,7 @@ description: Save any webpage as an AI agent skill from your browser
 
 # Chrome Extension
 
-Save any webpage as a SKILL.md directly from your browser. No server needed.
+Save any webpage as a SKILL.md directly from your browser.
 
 ## Install
 
@@ -33,14 +33,14 @@ Then load `packages/extension/dist/` as an unpacked extension.
 3. Optionally enter a custom skill name
 4. Click **Save as Skill**
 
-The extension extracts the page content as markdown, generates a SKILL.md with YAML frontmatter and auto-detected tags, and downloads it to your `Downloads/skillkit-skills/` folder.
+The extension sends the page URL to the SkillKit API, which extracts the content as markdown, generates tags using weighted 5-source analysis, and returns a complete SKILL.md. The file downloads to your `Downloads/skillkit-skills/` folder.
 
 ### Context Menu
 
 Right-click on any page:
 
-- **Save page as Skill** — saves the entire page
-- **Save selection as Skill** — saves only the selected text
+- **Save page as Skill** — sends the URL to the API, downloads the result
+- **Save selection as Skill** — builds the skill locally from selected text (no network request)
 
 ### Making Skills Available to Agents
 
@@ -59,28 +59,31 @@ skillkit sync
 
 ## How It Works
 
-The extension runs entirely in the browser:
+```
+Extension → POST /api/save-skill { url } → Server pipeline → Download
+```
 
-1. **Content script** extracts page content using [Turndown](https://github.com/mixmark-io/turndown) to convert HTML to clean markdown. It targets `<article>`, `<main>`, or `<body>` and strips scripts, nav, footer, and iframes.
+1. **Popup** reads the current tab's URL and title via `activeTab` permission. No content script injection needed.
 
-2. **Background service worker** generates the SKILL.md:
-   - Slugifies the page title into a skill name
-   - Builds YAML frontmatter (name, description, source URL, timestamp)
-   - Auto-detects tags from 40+ tech keywords (react, typescript, docker, kubernetes, etc.)
-   - Downloads via `chrome.downloads` API
+2. **Background service worker** sends the URL to `agenstskills.com/api/save-skill`:
+   - Server fetches the page and converts HTML to markdown via Turndown
+   - GitHub URLs are auto-converted to raw content
+   - Tags are detected from 5 weighted sources (URL segments, headings, code blocks, keywords, language)
+   - Returns a complete SKILL.md with YAML frontmatter
 
-3. **No server required** — the `POST /save` API endpoint exists for CLI users (`skillkit save`), but the extension works independently.
+3. **Download** — the service worker creates a blob and saves via `chrome.downloads` API.
+
+4. **Selection saves** work entirely offline — Chrome natively provides `selectionText` via the context menu API, so the skill is built locally with no server round-trip.
 
 ## Permissions
 
 | Permission | Why |
 |-----------|-----|
 | `contextMenus` | Right-click "Save as Skill" menu items |
-| `activeTab` | Access current page URL and title |
-| `storage` | Persist extension preferences |
+| `activeTab` | Access current page URL and title on click |
 | `downloads` | Save SKILL.md files to disk |
 
-No `host_permissions` needed. The extension never sends data to any server.
+No `host_permissions` or `scripting` permissions needed. Only the page URL is sent to the server — no page content, browsing history, or personal data.
 
 ## Generated SKILL.md Format
 
@@ -94,7 +97,7 @@ tags:
   - testing
 metadata:
   source: https://example.com/react-performance
-  savedAt: 2026-02-10T09:00:00.000Z
+  savedAt: 2026-02-14T09:00:00.000Z
 ---
 
 # React Performance Tips
@@ -111,9 +114,8 @@ pnpm --filter @skillkit/extension build
 ```
 
 Output goes to `packages/extension/dist/` with:
-- `background.global.js` — Service worker (5KB)
-- `content.global.js` — Content script with Turndown (23KB)
-- `popup.global.js` — Popup UI logic (3KB)
+- `background.global.js` — Service worker (~4KB)
+- `popup.global.js` — Popup UI logic (~2KB)
 - `popup.html` + `popup.css` — Monochromatic UI
 - `manifest.json` — Chrome Manifest V3
 - `icons/` — 16/48/128px PNG icons
