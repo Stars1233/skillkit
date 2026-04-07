@@ -40,7 +40,7 @@ import {
   isCancel,
   spinner,
   quickAgentSelect,
-  skillMultiselect,
+  quickSkillSelect,
   selectInstallMethod,
   confirm,
   outro,
@@ -273,13 +273,10 @@ export class InstallCommand extends Command {
       } else if (this.all || this.yes) {
         skillsToInstall = discoveredSkills;
       } else if (isInteractive && discoveredSkills.length > 1) {
-        // Interactive skill selection
         step(`Source: ${colors.cyan(this.source)}`);
 
-        const skillResult = await skillMultiselect({
-          message: "Select skills to install",
+        const skillResult = await quickSkillSelect({
           skills: discoveredSkills.map((s) => ({ name: s.name })),
-          initialValues: discoveredSkills.map((s) => s.name),
         });
 
         if (isCancel(skillResult)) {
@@ -287,8 +284,9 @@ export class InstallCommand extends Command {
           return 0;
         }
 
+        const selected = (skillResult as { skills: string[] }).skills;
         skillsToInstall = discoveredSkills.filter((s) =>
-          (skillResult as string[]).includes(s.name),
+          selected.includes(s.name),
         );
       }
 

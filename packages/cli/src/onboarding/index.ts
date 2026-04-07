@@ -42,6 +42,7 @@ export {
   select,
   agentMultiselect,
   quickAgentSelect,
+  quickSkillSelect,
   skillMultiselect,
   groupMultiselect,
   stepTrail,
@@ -87,8 +88,8 @@ import {
   getLastAgents,
 } from './preferences.js';
 
-let VERSION = '1.7.6';
-let AGENT_COUNT = 44;
+let VERSION = 'dev';
+let AGENT_COUNT = 0;
 
 export function setVersion(version: string): void {
   VERSION = version;
@@ -161,18 +162,22 @@ export async function runInstallFlow(options: InstallFlowOptions): Promise<Insta
   }
 
   prompts.step(`Source: ${colors.cyan(source)}`);
-  prompts.step(`Found ${discoveredSkills.length} skill${discoveredSkills.length !== 1 ? 's' : ''}`);
 
-  const skillNames = discoveredSkills.map(s => s.name);
-  const skillResult = await prompts.skillMultiselect({
-    message: 'Select skills to install',
-    skills: discoveredSkills.map(s => ({ name: s.name })),
-    initialValues: skillNames,
-  });
+  let selectedSkills: string[];
 
-  if (prompts.isCancel(skillResult)) {
-    prompts.cancel('Installation cancelled');
-    return { selectedSkills: [], selectedAgents: [], installMethod: 'symlink', cancelled: true };
+  if (discoveredSkills.length > 1) {
+    const skillResult = await prompts.quickSkillSelect({
+      skills: discoveredSkills.map(s => ({ name: s.name })),
+    });
+
+    if (prompts.isCancel(skillResult)) {
+      prompts.cancel('Installation cancelled');
+      return { selectedSkills: [], selectedAgents: [], installMethod: 'symlink', cancelled: true };
+    }
+
+    selectedSkills = (skillResult as { skills: string[] }).skills;
+  } else {
+    selectedSkills = discoveredSkills.map(s => s.name);
   }
 
   if (detectedAgents.length > 1) {
@@ -190,7 +195,7 @@ export async function runInstallFlow(options: InstallFlowOptions): Promise<Insta
 
   if (prompts.isCancel(agentResult)) {
     prompts.cancel('Installation cancelled');
-    return { selectedSkills: skillResult as string[], selectedAgents: [], installMethod: 'symlink', cancelled: true };
+    return { selectedSkills, selectedAgents: [], installMethod: 'symlink', cancelled: true };
   }
 
   saveLastAgents(agentResult as string[]);
@@ -202,7 +207,7 @@ export async function runInstallFlow(options: InstallFlowOptions): Promise<Insta
   if (prompts.isCancel(methodResult)) {
     prompts.cancel('Installation cancelled');
     return {
-      selectedSkills: skillResult as string[],
+      selectedSkills,
       selectedAgents: agentResult as string[],
       installMethod: 'symlink',
       cancelled: true,
@@ -210,7 +215,7 @@ export async function runInstallFlow(options: InstallFlowOptions): Promise<Insta
   }
 
   return {
-    selectedSkills: skillResult as string[],
+    selectedSkills,
     selectedAgents: agentResult as string[],
     installMethod: methodResult as 'symlink' | 'copy',
     cancelled: false,
