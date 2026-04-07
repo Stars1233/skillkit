@@ -33,7 +33,7 @@ export class GenerateCommand extends Command {
       ['Interactive wizard', '$0 generate'],
       ['Use specific provider', '$0 generate --provider openai'],
       ['Compose from existing skills', '$0 generate --compose "testing patterns for vitest"'],
-      ['Target specific agents', '$0 generate --agents claude-code,cursor'],
+      ['Target specific agents', '$0 generate --agent claude-code,cursor'],
       ['Skip memory context', '$0 generate --no-memory'],
     ],
   });
@@ -50,7 +50,7 @@ export class GenerateCommand extends Command {
     description: 'Natural language search to find skills to compose',
   });
 
-  agents = Option.String('--agents,-a', {
+  agents = Option.String('--agent,--agents,-a', {
     description: 'Target agents (comma-separated)',
   });
 
@@ -536,6 +536,9 @@ ${trustScore.warnings.length > 0 ? `\nWarnings:\n${trustScore.warnings.map((w) =
     let targetAgents: string[];
 
     if (this.agents) {
+      if (process.argv.includes('--agents')) {
+        console.warn('Warning: --agents is deprecated, use --agent instead (--agents will be removed in v2.0)');
+      }
       targetAgents = this.agents.split(',').map((a) => a.trim());
     } else {
       const agentOptions = [

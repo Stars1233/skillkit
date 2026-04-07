@@ -147,7 +147,7 @@ export class ManifestAddCommand extends Command {
     description: 'Specific skills to include (comma-separated)',
   });
 
-  agents = Option.String('--agents,-a', {
+  agents = Option.String('--agent,--agents,-a', {
     description: 'Target agents (comma-separated)',
   });
 
@@ -159,6 +159,9 @@ export class ManifestAddCommand extends Command {
     }
 
     if (this.agents) {
+      if (process.argv.includes('--agents')) {
+        console.warn('Warning: --agents is deprecated, use --agent instead (--agents will be removed in v2.0)');
+      }
       options.agents = this.agents.split(',').map(s => s.trim());
     }
 
