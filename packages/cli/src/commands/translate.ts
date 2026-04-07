@@ -1,7 +1,7 @@
 import { Command, Option } from 'clipanion';
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
-import { colors, warn, success } from '../onboarding/index.js';
+import { colors, warn, success, error } from '../onboarding/index.js';
 import {
   type AgentType,
   translateSkill,
@@ -102,14 +102,14 @@ export class TranslateCommand extends Command {
 
     // Validate target agent
     if (!this.to) {
-      console.log(colors.muted('Error: --to/-t target agent is required'));
+      error('--to/-t target agent is required');
       console.log(colors.muted('Use --list to see all supported agents'));
       return 1;
     }
 
     const targetAgent = this.to as AgentType;
     if (!getSupportedTranslationAgents().includes(targetAgent)) {
-      console.log(colors.muted(`Error: Unknown target agent "${this.to}"`));
+      error(`Unknown target agent "${this.to}"`);
       console.log(colors.muted('Use --list to see all supported agents'));
       return 1;
     }
@@ -121,7 +121,7 @@ export class TranslateCommand extends Command {
 
     // Translate single skill
     if (!this.source) {
-      console.log(colors.muted('Error: Please specify a skill name or path, or use --all'));
+      error('Please specify a skill name or path, or use --all');
       return 1;
     }
 
@@ -174,7 +174,7 @@ export class TranslateCommand extends Command {
    */
   private showCompatibility(): number {
     if (!this.from || !this.to) {
-      console.log(colors.muted('Error: Both --from and --to are required for compatibility check'));
+      error('Both --from and --to are required for compatibility check');
       return 1;
     }
 
@@ -322,7 +322,7 @@ export class TranslateCommand extends Command {
       }
 
       if (!found) {
-        console.log(colors.muted(`Error: Skill "${source}" not found`));
+        error(`Skill "${source}" not found`);
         console.log(colors.muted('Searched in:'));
         for (const dir of searchDirs) {
           console.log(colors.muted(`  ${dir}`));
@@ -339,7 +339,7 @@ export class TranslateCommand extends Command {
     });
 
     if (!result.success) {
-      console.log(colors.muted('Translation failed:'));
+      error('Translation failed:');
       for (const item of result.incompatible) {
         console.log(colors.muted(`  ${item}`));
       }
@@ -388,7 +388,7 @@ export class TranslateCommand extends Command {
 
     // Check for existing file
     if (existsSync(outputPath) && !this.force) {
-      console.log(colors.muted(`Error: ${outputPath} already exists`));
+      error(`${outputPath} already exists`);
       console.log(colors.muted('Use --force to overwrite'));
       return 1;
     }

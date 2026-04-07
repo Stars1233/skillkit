@@ -1,4 +1,4 @@
-import { colors, warn, success as successLog, error as errorLog } from '../onboarding/index.js';
+import { colors, warn, success, error } from '../onboarding/index.js';
 import { Command, Option } from 'clipanion';
 import { setSkillEnabled, findSkill } from '@skillkit/core';
 import { getSearchDirs } from '../helpers.js';
@@ -18,14 +18,14 @@ export class EnableCommand extends Command {
 
   async execute(): Promise<number> {
     const searchDirs = getSearchDirs();
-    let success = 0;
+    let successCount = 0;
     let failed = 0;
 
     for (const skillName of this.skills) {
       const skill = findSkill(skillName, searchDirs);
 
       if (!skill) {
-        errorLog(`Skill not found: ${skillName}`);
+        error(`Skill not found: ${skillName}`);
         failed++;
         continue;
       }
@@ -38,15 +38,15 @@ export class EnableCommand extends Command {
       const result = setSkillEnabled(skill.path, true);
 
       if (result) {
-        successLog(`Enabled: ${skillName}`);
-        success++;
+        success(`Enabled: ${skillName}`);
+        successCount++;
       } else {
-        errorLog(`Failed to enable: ${skillName}`);
+        error(`Failed to enable: ${skillName}`);
         failed++;
       }
     }
 
-    if (success > 0) {
+    if (successCount > 0) {
       console.log(colors.muted('\nRun `skillkit sync` to update your agent config'));
     }
 
@@ -69,14 +69,14 @@ export class DisableCommand extends Command {
 
   async execute(): Promise<number> {
     const searchDirs = getSearchDirs();
-    let success = 0;
+    let successCount = 0;
     let failed = 0;
 
     for (const skillName of this.skills) {
       const skill = findSkill(skillName, searchDirs);
 
       if (!skill) {
-        errorLog(`Skill not found: ${skillName}`);
+        error(`Skill not found: ${skillName}`);
         failed++;
         continue;
       }
@@ -90,14 +90,14 @@ export class DisableCommand extends Command {
 
       if (result) {
         warn(`Disabled: ${skillName}`);
-        success++;
+        successCount++;
       } else {
-        errorLog(`Failed to disable: ${skillName}`);
+        error(`Failed to disable: ${skillName}`);
         failed++;
       }
     }
 
-    if (success > 0) {
+    if (successCount > 0) {
       console.log(colors.muted('\nRun `skillkit sync` to update your agent config'));
     }
 

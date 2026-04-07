@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { Command, Option } from 'clipanion';
 import { findAllSkills, findSkill, detectProvider, isLocalPath } from '@skillkit/core';
 import { getSearchDirs, loadSkillMetadata, saveSkillMetadata } from '../helpers.js';
-import { colors, spinner, warn, step, error } from '../onboarding/index.js';
+import { colors, spinner, warn, step } from '../onboarding/index.js';
 
 export class UpdateCommand extends Command {
   static override paths = [['update'], ['u']];
@@ -133,7 +133,7 @@ export class UpdateCommand extends Command {
         }
       } catch (err) {
         s.stop(colors.error(`Failed to update ${skill.name}`));
-        error(colors.muted(err instanceof Error ? err.message : String(err)));
+        console.log(colors.muted(err instanceof Error ? err.message : String(err)));
         failed++;
       }
     }
