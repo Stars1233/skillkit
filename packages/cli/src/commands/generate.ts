@@ -536,6 +536,9 @@ ${trustScore.warnings.length > 0 ? `\nWarnings:\n${trustScore.warnings.map((w) =
     let targetAgents: string[];
 
     if (this.agents) {
+      if (process.argv.includes('--agents')) {
+        console.warn('Warning: --agents is deprecated, use --agent instead (--agents will be removed in v2.0)');
+      }
       targetAgents = this.agents.split(',').map((a) => a.trim());
     } else {
       const agentOptions = [
