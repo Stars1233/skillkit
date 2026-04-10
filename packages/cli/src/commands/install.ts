@@ -497,45 +497,52 @@ export class InstallCommand extends Command {
             rmSync(targetPath, { recursive: true, force: true });
           }
 
+          const isStandaloneFile = statSync(sourcePath).isFile();
+
           if (useSymlink && primaryPath) {
-            symlinkSync(primaryPath, targetPath, "dir");
+            symlinkSync(primaryPath, targetPath, isStandaloneFile ? "file" : "dir");
           } else {
-            const isStandaloneFile = statSync(sourcePath).isFile();
             if (isStandaloneFile) {
-              mkdirSync(targetPath, { recursive: true });
-              cpSync(sourcePath, join(targetPath, "SKILL.md"));
+              const fileDest = targetPath.endsWith(".md") ? targetPath : `${targetPath}.md`;
+              cpSync(sourcePath, fileDest);
             } else {
               cpSync(sourcePath, targetPath, { recursive: true, dereference: true });
             }
             if (isSymlinkMode && primaryPath === null) {
-              primaryPath = targetPath;
+              primaryPath = isStandaloneFile
+                ? (targetPath.endsWith(".md") ? targetPath : `${targetPath}.md`)
+                : targetPath;
             }
 
-            const packageJsonPath = join(targetPath, "package.json");
-            if (existsSync(packageJsonPath)) {
-              s.stop(`Installed ${skillName} to ${adapter.name}`);
-              s.start(`Installing npm dependencies for ${skillName}...`);
-              try {
-                await execFileAsync("npm", ["install", "--omit=dev"], { cwd: targetPath });
-                s.stop(`Installed dependencies for ${skillName}`);
-              } catch {
-                s.stop(colors.warning(`Dependencies failed for ${skillName}`));
-                console.log(colors.muted("Run manually: npm install in " + targetPath));
+            if (!isStandaloneFile) {
+              const packageJsonPath = join(targetPath, "package.json");
+              if (existsSync(packageJsonPath)) {
+                s.stop(`Installed ${skillName} to ${adapter.name}`);
+                s.start(`Installing npm dependencies for ${skillName}...`);
+                try {
+                  await execFileAsync("npm", ["install", "--omit=dev"], { cwd: targetPath });
+                  s.stop(`Installed dependencies for ${skillName}`);
+                } catch {
+                  s.stop(colors.warning(`Dependencies failed for ${skillName}`));
+                  console.log(colors.muted("Run manually: npm install in " + targetPath));
+                }
+                s.start(`Finishing ${skillName} installation...`);
               }
-              s.start(`Finishing ${skillName} installation...`);
             }
           }
 
-          const metadata: SkillMetadata = {
-            name: skillName,
-            description: "",
-            source: this.source,
-            sourceType: providerAdapter!.type,
-            subpath: skillName,
-            installedAt: new Date().toISOString(),
-            enabled: true,
-          };
-          saveSkillMetadata(targetPath, metadata);
+          if (!isStandaloneFile) {
+            const metadata: SkillMetadata = {
+              name: skillName,
+              description: "",
+              source: this.source,
+              sourceType: providerAdapter!.type,
+              subpath: skillName,
+              installedAt: new Date().toISOString(),
+              enabled: true,
+            };
+            saveSkillMetadata(targetPath, metadata);
+          }
 
           installedAgents.push(agentType);
           s.stop(`Installed ${skillName} to ${adapter.name}${useSymlink ? " (symlink)" : ""}`);
