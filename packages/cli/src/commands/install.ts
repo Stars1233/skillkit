@@ -472,7 +472,10 @@ export class InstallCommand extends Command {
           mkdirSync(installDir, { recursive: true });
         }
 
-        const targetPath = join(installDir, skillName);
+        const isStandaloneFile = statSync(sourcePath).isFile();
+        const targetPath = isStandaloneFile
+          ? join(installDir, skillName.endsWith(".md") ? skillName : `${skillName}.md`)
+          : join(installDir, skillName);
 
         if (existsSync(targetPath) && !this.force) {
           if (!this.quiet) {
@@ -497,21 +500,16 @@ export class InstallCommand extends Command {
             rmSync(targetPath, { recursive: true, force: true });
           }
 
-          const isStandaloneFile = statSync(sourcePath).isFile();
-
           if (useSymlink && primaryPath) {
             symlinkSync(primaryPath, targetPath, isStandaloneFile ? "file" : "dir");
           } else {
             if (isStandaloneFile) {
-              const fileDest = targetPath.endsWith(".md") ? targetPath : `${targetPath}.md`;
-              cpSync(sourcePath, fileDest);
+              cpSync(sourcePath, targetPath);
             } else {
               cpSync(sourcePath, targetPath, { recursive: true, dereference: true });
             }
             if (isSymlinkMode && primaryPath === null) {
-              primaryPath = isStandaloneFile
-                ? (targetPath.endsWith(".md") ? targetPath : `${targetPath}.md`)
-                : targetPath;
+              primaryPath = targetPath;
             }
 
             if (!isStandaloneFile) {
