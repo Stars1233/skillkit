@@ -22,6 +22,7 @@
 </div>
 
 ---
+https://github.com/user-attachments/assets/b1843a07-2c54-422d-8903-f30a790cfb37
 
 Skills make AI coding agents smarter. But every agent uses a different format:
 
@@ -44,9 +45,7 @@ npx skillkit@latest
 
 <div align="center">
 
-[![SkillKit vs skills CLI](docs/img/inital-command.png)](https://raw.githubusercontent.com/rohitg00/skillkit/main/docs/video/skills-vs-skillkit.mp4)
-
-*Click to watch: SkillKit vs skills CLI — live clone progress, sparse checkout, 45 agents*
+![SkillKit vs skills CLI](docs/img/inital-command.png)
 
 </div>
 
