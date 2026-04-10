@@ -59,7 +59,7 @@ function spawnGit(args: string[], onProgress?: (msg: string) => void): Promise<v
 
     proc.stderr?.on('data', (data: Buffer) => {
       const text = data.toString();
-      stderr += text;
+      stderr = (stderr + text).slice(-4096);
       if (onProgress) {
         const msg = parseGitProgress(text);
         if (msg) onProgress(msg);
@@ -94,9 +94,18 @@ export async function cloneRepo(
   if (tryPartialClone) {
     const partialArgs = [...args, '--filter=blob:none', '--no-checkout', cloneUrl, tempDir];
 
+    let partialCloneOk = false;
     try {
       await spawnGit(partialArgs, options.onProgress ?? (() => {}));
+      partialCloneOk = true;
+    } catch {
+      options.onProgress?.('Partial clone unsupported, falling back to full clone');
+      if (existsSync(tempDir)) {
+        rmSync(tempDir, { recursive: true, force: true });
+      }
+    }
 
+    if (partialCloneOk) {
       execFileSync('git', ['-C', tempDir, 'sparse-checkout', 'init', '--cone'], {
         stdio: ['pipe', 'pipe', 'pipe'],
       });
@@ -110,7 +119,7 @@ export async function cloneRepo(
       }
       execFileSync(
         'git',
-        ['-C', tempDir, 'sparse-checkout', 'set', ...sparsePaths],
+        ['-C', tempDir, 'sparse-checkout', 'set', '--', ...sparsePaths],
         { stdio: ['pipe', 'pipe', 'pipe'] },
       );
 
@@ -118,11 +127,6 @@ export async function cloneRepo(
       await spawnGit(['-C', tempDir, 'checkout'], options.onProgress ?? (() => {}));
 
       return;
-    } catch (err) {
-      options.onProgress?.(`Partial clone unsupported, falling back to full clone`);
-      if (existsSync(tempDir)) {
-        rmSync(tempDir, { recursive: true, force: true });
-      }
     }
   }
 
