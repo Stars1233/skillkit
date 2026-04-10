@@ -15,7 +15,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/rohitg00/skillkit?style=flat-square)](https://github.com/rohitg00/skillkit/stargazers)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 
-**SkillKit** is the open source package manager for AI agent skills. Write a skill once, deploy it to **44 agents** — Claude, Cursor, Copilot, Windsurf, Devin, Codex, and 38 more. No rewrites. 400K+ skills across registries.
+**SkillKit** is the open source package manager for AI agent skills. Write a skill once, deploy it to **45 agents** — Claude, Cursor, Copilot, Windsurf, Devin, Codex, and 39 more. No rewrites. 400K+ skills across registries.
 
 [Website](https://skillkit.sh) &middot; [Docs](https://skillkit.sh/docs) &middot; [API Explorer](https://skillkit.sh/api) &middot; [Chrome Extension](https://github.com/rohitg00/skillkit/tree/main/packages/extension#readme) &middot; [npm](https://www.npmjs.com/package/skillkit)
 
@@ -34,7 +34,7 @@ Skills make AI coding agents smarter. But every agent uses a different format:
 
 You end up rewriting the same skill for each agent, or locking into one platform.
 
-**SkillKit fixes this.** Install from 400K+ skills across registries, auto-translate between formats, persist learnings with Memory. Works with Claude, Cursor, Windsurf, Copilot, and 40 more.
+**SkillKit fixes this.** Install from 400K+ skills across registries, auto-translate between formats, persist learnings with Memory. Works with Claude, Cursor, Windsurf, Copilot, and 41 more.
 
 ```bash
 npx skillkit@latest
@@ -44,11 +44,13 @@ npx skillkit@latest
 
 <div align="center">
 
-[![Watch the demo](docs/img/inital-command.png)](https://raw.githubusercontent.com/rohitg00/skillkit/main/docs/video/skillkit.mp4)
+[![SkillKit vs skills CLI](docs/img/inital-command.png)](https://raw.githubusercontent.com/rohitg00/skillkit/main/docs/video/skills-vs-skillkit.mp4)
 
-*Click the image above to watch the full demo*
+*Click to watch: SkillKit vs skills CLI — live clone progress, sparse checkout, 45 agents*
 
 </div>
+
+> **New in v1.20.0:** Live download progress, sparse checkout for monorepos (~1.4s for large repos), and `skillkit remove --source` to bulk-remove by repo.
 
 ## Quick Start
 
@@ -203,7 +205,7 @@ skillkit ui
 
 ![SkillKit Interactive CLI](docs/img/inital-command.png)
 
-## Supported Agents (44)
+## Supported Agents (45)
 
 | Agent | Format | Directory |
 |-------|--------|-----------|
@@ -219,7 +221,7 @@ skillkit ui
 | **Sourcegraph Cody** | SKILL.md | `.cody/skills/` |
 | **Amazon Q** | SKILL.md | `.amazonq/skills/` |
 
-Plus 33 more: Amp, Antigravity, Augment Code, Bolt, Clawdbot, Cline, CodeBuddy, CodeGPT, CommandCode, Continue, Crush, Droid, Factory, Goose, Kilo Code, Kiro CLI, Lovable, MCPJam, Mux, Neovate, OpenHands, Pi, PlayCode, Qoder, Qwen, Replit Agent, Roo Code, Tabby, Tabnine, Trae, Vercel, Zencoder, Universal
+Plus 34 more: Amp, Antigravity, Augment Code, Bolt, Clawdbot, Cline, CodeBuddy, CodeGPT, CommandCode, Continue, Crush, Droid, Factory, Goose, Kilo Code, Kiro CLI, Lovable, MCPJam, Mux, Neovate, OpenClaw, OpenHands, Pi, PlayCode, Qoder, Qwen, Replit Agent, Roo Code, Tabby, Tabnine, Trae, Vercel, Zencoder, Universal
 
 [Full agent details](https://skillkit.sh/docs/agents)
 
@@ -228,8 +230,10 @@ Plus 33 more: Amp, Antigravity, Augment Code, Bolt, Clawdbot, Cline, CodeBuddy, 
 ### Core
 
 ```bash
-skillkit install <source>        # Install skills
+skillkit install <source>        # Install skills (with live progress)
 skillkit remove <skills>         # Remove skills
+skillkit remove --source org/repo # Remove all skills from a source
+skillkit remove --all            # Remove all installed skills
 skillkit translate <skill> --to  # Translate between agents
 skillkit sync                    # Deploy to agent config
 skillkit recommend               # Smart recommendations
