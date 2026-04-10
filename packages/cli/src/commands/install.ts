@@ -529,18 +529,16 @@ export class InstallCommand extends Command {
             }
           }
 
-          if (!isStandaloneFile) {
-            const metadata: SkillMetadata = {
-              name: skillName,
-              description: "",
-              source: this.source,
-              sourceType: providerAdapter!.type,
-              subpath: skillName,
-              installedAt: new Date().toISOString(),
-              enabled: true,
-            };
-            saveSkillMetadata(targetPath, metadata);
-          }
+          const metadata: SkillMetadata = {
+            name: skillName,
+            description: "",
+            source: this.source,
+            sourceType: providerAdapter!.type,
+            subpath: skillName,
+            installedAt: new Date().toISOString(),
+            enabled: true,
+          };
+          saveSkillMetadata(targetPath, metadata);
 
           installedAgents.push(agentType);
           s.stop(`Installed ${skillName} to ${adapter.name}${useSymlink ? " (symlink)" : ""}`);

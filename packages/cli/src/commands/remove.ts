@@ -1,5 +1,5 @@
 import { existsSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { colors, warn, success, error } from '../onboarding/index.js';
 import { Command, Option } from 'clipanion';
 import { findSkill, findAllSkills, loadMetadata, AgentsMdParser, AgentsMdGenerator } from '@skillkit/core';
@@ -84,6 +84,10 @@ export class RemoveCommand extends Command {
 
       try {
         rmSync(skillPath, { recursive: true, force: true });
+        if (skillPath.endsWith('.md')) {
+          const metaSibling = join(dirname(skillPath), `.${basename(skillPath, '.md')}.skillkit.json`);
+          if (existsSync(metaSibling)) rmSync(metaSibling);
+        }
         success(`Removed: ${skillName}`);
         removed++;
       } catch (err) {
