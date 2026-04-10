@@ -4,6 +4,7 @@ import {
   cpSync,
   rmSync,
   symlinkSync,
+  statSync,
   readFileSync,
   writeFileSync,
 } from "node:fs";
@@ -499,7 +500,13 @@ export class InstallCommand extends Command {
           if (useSymlink && primaryPath) {
             symlinkSync(primaryPath, targetPath, "dir");
           } else {
-            cpSync(sourcePath, targetPath, { recursive: true, dereference: true });
+            const isStandaloneFile = statSync(sourcePath).isFile();
+            if (isStandaloneFile) {
+              mkdirSync(targetPath, { recursive: true });
+              cpSync(sourcePath, join(targetPath, "SKILL.md"));
+            } else {
+              cpSync(sourcePath, targetPath, { recursive: true, dereference: true });
+            }
             if (isSymlinkMode && primaryPath === null) {
               primaryPath = targetPath;
             }
