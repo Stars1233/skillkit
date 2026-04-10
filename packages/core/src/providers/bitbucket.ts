@@ -75,7 +75,7 @@ export class BitbucketProvider implements GitProviderAdapter {
     const tempDir = join(tmpdir(), `skillkit-${randomUUID()}`);
 
     try {
-      await cloneRepo(cloneUrl, tempDir, options);
+      await cloneRepo(cloneUrl, tempDir, { ...options, subpath });
 
       const searchDir = subpath ? join(tempDir, subpath) : tempDir;
       const skills = discoverSkills(searchDir);

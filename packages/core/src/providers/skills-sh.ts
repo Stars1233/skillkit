@@ -65,7 +65,7 @@ export class SkillsShProvider implements GitProviderAdapter {
     const tempDir = join(tmpdir(), `skillkit-skillssh-${randomUUID()}`);
 
     try {
-      await cloneRepo(cloneUrl, tempDir, options);
+      await cloneRepo(cloneUrl, tempDir, { ...options, subpath });
 
       const searchDir = subpath ? join(tempDir, subpath) : tempDir;
 

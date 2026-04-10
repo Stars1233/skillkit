@@ -19,6 +19,7 @@ export interface CloneOptions {
   depth?: number;
   branch?: string;
   ssh?: boolean;
+  subpath?: string;
   onProgress?: (message: string) => void;
 }
 
@@ -100,11 +101,16 @@ export async function cloneRepo(
         stdio: ['pipe', 'pipe', 'pipe'],
       });
 
-      const sparsePaths = SKILL_DISCOVERY_PATHS.filter((p) => !p.includes('/'));
-      const deepPaths = SKILL_DISCOVERY_PATHS.filter((p) => p.includes('/'));
+      const sparsePaths = [...SKILL_DISCOVERY_PATHS];
+      if (options.subpath) {
+        sparsePaths.push(options.subpath);
+        for (const dp of SKILL_DISCOVERY_PATHS) {
+          sparsePaths.push(`${options.subpath}/${dp}`);
+        }
+      }
       execFileSync(
         'git',
-        ['-C', tempDir, 'sparse-checkout', 'set', ...sparsePaths, ...deepPaths],
+        ['-C', tempDir, 'sparse-checkout', 'set', ...sparsePaths],
         { stdio: ['pipe', 'pipe', 'pipe'] },
       );
 
