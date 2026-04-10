@@ -311,10 +311,16 @@ export function findSkill(name: string, searchDirs: string[]): Skill | null {
   for (const dir of searchDirs) {
     if (!existsSync(dir)) continue;
 
+    const location: SkillLocation = dir.includes(process.cwd()) ? 'project' : 'global';
+
     const skillPath = join(dir, name);
     if (existsSync(skillPath)) {
-      const location: SkillLocation = dir.includes(process.cwd()) ? 'project' : 'global';
       return parseSkill(skillPath, location);
+    }
+
+    const mdPath = join(dir, name.endsWith('.md') ? name : `${name}.md`);
+    if (existsSync(mdPath)) {
+      return parseStandaloneSkill(mdPath, location);
     }
   }
 

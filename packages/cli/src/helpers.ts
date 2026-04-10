@@ -8,7 +8,7 @@ import {
   loadSkillMetadata as coreLoadSkillMetadata,
   saveSkillMetadata as coreSaveSkillMetadata,
 } from "@skillkit/core";
-import { getAdapter, detectAgent } from "@skillkit/agents";
+import { getAdapter, detectAgent, getAllAdapters } from "@skillkit/agents";
 import type { AgentType, AgentAdapterInfo } from "@skillkit/core";
 
 // Re-export metadata functions directly (they don't need adapter bridging)
@@ -16,15 +16,25 @@ export const loadSkillMetadata = coreLoadSkillMetadata;
 export const saveSkillMetadata = coreSaveSkillMetadata;
 
 export function getSearchDirs(agentType?: AgentType): string[] {
-  const type = agentType || loadConfig().agent;
-  const adapter = getAdapter(type);
-  const adapterInfo: AgentAdapterInfo = {
-    type: adapter.type,
-    name: adapter.name,
-    skillsDir: adapter.skillsDir,
-    configFile: adapter.configFile,
-  };
-  return coreGetSearchDirs(adapterInfo);
+  const dirs = new Set<string>();
+
+  const adapters = agentType
+    ? [getAdapter(agentType)]
+    : getAllAdapters();
+
+  for (const adapter of adapters) {
+    const info: AgentAdapterInfo = {
+      type: adapter.type,
+      name: adapter.name,
+      skillsDir: adapter.skillsDir,
+      configFile: adapter.configFile,
+    };
+    for (const dir of coreGetSearchDirs(info)) {
+      dirs.add(dir);
+    }
+  }
+
+  return [...dirs];
 }
 
 export function getInstallDir(global = false, agentType?: AgentType): string {
