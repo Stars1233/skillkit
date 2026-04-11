@@ -1,7 +1,7 @@
 import { existsSync, rmSync, cpSync } from 'node:fs';
 import { join } from 'node:path';
 import { Command, Option } from 'clipanion';
-import { findAllSkills, findSkill, detectProvider, isLocalPath, computeSkillChecksum } from '@skillkit/core';
+import { findAllSkills, findSkill, detectProvider, isLocalPath, computeSkillChecksum, addSkillToLock } from '@skillkit/core';
 import { getSearchDirs, loadSkillMetadata, saveSkillMetadata, fetchGitHubActivity } from '../helpers.js';
 import { colors, spinner, warn, step } from '../onboarding/index.js';
 
@@ -86,8 +86,18 @@ export class UpdateCommand extends Command {
           rmSync(skill.path, { recursive: true, force: true });
           cpSync(localPath, skill.path, { recursive: true, dereference: true });
 
+          metadata.checksum = computeSkillChecksum(skill.path);
           metadata.updatedAt = new Date().toISOString();
           saveSkillMetadata(skill.path, metadata);
+          addSkillToLock(skill.name, {
+            source: metadata.source,
+            sourceType: metadata.sourceType,
+            installedAt: metadata.installedAt,
+            updatedAt: metadata.updatedAt,
+            checksum: metadata.checksum,
+            agents: [],
+            path: skill.path,
+          });
 
           s.stop(`Updated ${skill.name}`);
           updated++;
@@ -101,9 +111,10 @@ export class UpdateCommand extends Command {
           }
 
           const parsed = provider.parseSource?.(metadata.source);
-          if (parsed && 'owner' in parsed && 'repo' in parsed && (provider.type === 'github' || provider.type === 'skills-sh')) {
+          if (!this.force && parsed && 'owner' in parsed && 'repo' in parsed && (provider.type === 'github' || provider.type === 'skills-sh')) {
             const activity = await fetchGitHubActivity(parsed.owner, parsed.repo);
-            if (activity?.pushedAt && metadata.updatedAt && activity.pushedAt <= metadata.updatedAt) {
+            const localDate = metadata.updatedAt ?? metadata.installedAt;
+            if (activity?.pushedAt && localDate && activity.pushedAt <= localDate) {
               s.stop(`${skill.name}: no changes detected`);
               skipped++;
               continue;
@@ -131,7 +142,7 @@ export class UpdateCommand extends Command {
           }
 
           const newChecksum = computeSkillChecksum(sourcePath);
-          if (newChecksum && metadata.checksum && newChecksum === metadata.checksum) {
+          if (!this.force && newChecksum && metadata.checksum && newChecksum === metadata.checksum) {
             s.stop(`${skill.name}: already up to date`);
             rmSync(result.path, { recursive: true, force: true });
             skipped++;
@@ -146,6 +157,15 @@ export class UpdateCommand extends Command {
           metadata.checksum = computeSkillChecksum(skill.path);
           metadata.updatedAt = new Date().toISOString();
           saveSkillMetadata(skill.path, metadata);
+          addSkillToLock(skill.name, {
+            source: metadata.source,
+            sourceType: metadata.sourceType,
+            installedAt: metadata.installedAt,
+            updatedAt: metadata.updatedAt,
+            checksum: metadata.checksum,
+            agents: [],
+            path: skill.path,
+          });
 
           s.stop(`Updated ${skill.name}`);
           updated++;

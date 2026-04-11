@@ -597,20 +597,24 @@ export class InstallCommand extends Command {
       }
 
       if (installedAgents.length > 0) {
-        const primaryInstallPath = join(getInstallDir(this.global, installedAgents[0] as AgentType), skillName);
+        const firstAgentInstallDir = getInstallDir(this.global, installedAgents[0] as AgentType);
+        const isStandalone = existsSync(join(firstAgentInstallDir, skillName.endsWith(".md") ? skillName : `${skillName}.md`));
+        const actualPath = isStandalone
+          ? join(firstAgentInstallDir, skillName.endsWith(".md") ? skillName : `${skillName}.md`)
+          : join(firstAgentInstallDir, skillName);
         addSkillToLock(skillName, {
           source: this.source,
           sourceType: providerAdapter!.type,
           installedAt: new Date().toISOString(),
-          checksum: computeSkillChecksum(primaryInstallPath),
+          checksum: computeSkillChecksum(actualPath),
           agents: installedAgents,
-          path: primaryInstallPath,
+          path: actualPath,
         });
         installResults.push({
           skillName,
           method: installMethod,
           agents: installedAgents,
-          path: primaryInstallPath,
+          path: actualPath,
         });
       }
     }
