@@ -13,7 +13,7 @@ import {
   GitHubSkillRegistry,
   SkillsShRegistry,
 } from "@skillkit/core";
-import { formatCount } from "../helpers.js";
+import { formatCount, loadTaps } from "../helpers.js";
 
 interface SkillResult {
   name: string;
@@ -86,6 +86,20 @@ export class FindCommand extends Command {
         repoName: skill.repo || skill.source?.split("/").pop() || "",
       }),
     );
+
+    const taps = loadTaps();
+    for (const tap of taps.taps) {
+      const tapLabel = tap.name || tap.source;
+      const exists = allSkills.some((s) => s.source === tap.source);
+      if (!exists) {
+        allSkills.push({
+          name: tapLabel,
+          description: `Custom tap: ${tap.source}`,
+          source: tap.source,
+          repoName: tap.source.split("/").pop() || "",
+        });
+      }
+    }
 
     let results: SkillResult[];
     let searchTerm: string | undefined;
