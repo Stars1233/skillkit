@@ -8,7 +8,7 @@ import {
 } from '@skillkit/core';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import {
   SearchSkillsInputSchema,
   GetSkillInputSchema,
@@ -181,34 +181,34 @@ export function handleListCategories(skills: SkillEntry[]) {
   };
 }
 
-const AGENT_DIR_MAP: Record<string, string> = {
-  'claude-code': '.claude/skills', 'cursor': '.cursor/skills', 'codex': '.codex/skills',
-  'gemini-cli': '.gemini/skills', 'opencode': '.opencode/skills', 'antigravity': '.antigravity/skills',
-  'amp': '.amp/skills', 'clawdbot': '.clawdbot/skills', 'openclaw': 'skills',
-  'github-copilot': '.github/skills', 'goose': '.goose/skills', 'kilo': '.kilocode/skills',
-  'kiro-cli': '.kiro/skills', 'roo': '.roo/skills', 'trae': '.trae/skills',
-  'windsurf': '.windsurf/skills', 'universal': 'skills', 'droid': '.factory/skills',
-  'factory': '.factory/skills', 'cline': '.cline/skills', 'codebuddy': '.codebuddy/skills',
-  'codegpt': '.codegpt/skills', 'commandcode': '.commandcode/skills', 'continue': '.continue/skills',
-  'crush': '.crush/skills', 'devin': '.devin/skills', 'mcpjam': '.mcpjam/skills',
-  'mux': '.mux/skills', 'neovate': '.neovate/skills', 'openhands': '.openhands/skills',
-  'pi': '.pi/skills', 'playcode-agent': '.playcode/skills', 'qoder': '.qoder/skills',
-  'qwen': '.qwen/skills', 'vercel': '.vercel/skills', 'zencoder': '.zencoder/skills',
-  'aider': '.aider/skills', 'amazon-q': '.amazonq/skills', 'augment-code': '.augment/skills',
-  'bolt': '.bolt/skills', 'lovable': '.lovable/skills', 'replit-agent': '.replit/skills',
-  'sourcegraph-cody': '.cody/skills', 'tabby': '.tabby/skills', 'tabnine': '.tabnine/skills',
+const AGENT_DIR_MAP: Record<string, string[]> = {
+  'claude-code': ['.claude/skills'], 'cursor': ['.cursor/skills'], 'codex': ['.codex/skills'],
+  'gemini-cli': ['.gemini/skills'], 'opencode': ['.opencode/skills', '.config/opencode/skills'],
+  'antigravity': ['.antigravity/skills'], 'amp': ['.amp/skills'], 'clawdbot': ['.clawdbot/skills'],
+  'openclaw': ['skills'], 'github-copilot': ['.github/skills'], 'goose': ['.goose/skills'],
+  'kilo': ['.kilocode/skills'], 'kiro-cli': ['.kiro/skills'], 'roo': ['.roo/skills'],
+  'trae': ['.trae/skills'], 'windsurf': ['.windsurf/skills', '.codeium/windsurf/skills'],
+  'universal': ['skills'], 'droid': ['.factory/skills'], 'factory': ['.factory/skills'],
+  'cline': ['.cline/skills'], 'codebuddy': ['.codebuddy/skills'], 'codegpt': ['.codegpt/skills'],
+  'commandcode': ['.commandcode/skills'], 'continue': ['.continue/skills'],
+  'crush': ['.crush/skills'], 'devin': ['.devin/skills'], 'mcpjam': ['.mcpjam/skills'],
+  'mux': ['.mux/skills'], 'neovate': ['.neovate/skills'], 'openhands': ['.openhands/skills'],
+  'pi': ['.pi/skills'], 'playcode-agent': ['.playcode/skills'], 'qoder': ['.qoder/skills'],
+  'qwen': ['.qwen/skills'], 'vercel': ['.vercel/skills'], 'zencoder': ['.zencoder/skills'],
+  'aider': ['.aider/skills'], 'amazon-q': ['.amazonq/skills'], 'augment-code': ['.augment/skills'],
+  'bolt': ['.bolt/skills'], 'lovable': ['.lovable/skills'], 'replit-agent': ['.replit/skills'],
+  'sourcegraph-cody': ['.cody/skills'], 'tabby': ['.tabby/skills'], 'tabnine': ['.tabnine/skills'],
 };
 
 export function getLocalSkillDirs(agentFilter?: string): string[] {
   const dirs: string[] = [];
   const home = homedir();
-  const roots = [home, process.cwd()];
+  const roots = [process.cwd(), home];
 
   let allowedPaths: Set<string> | null = null;
   if (agentFilter) {
-    const agentDir = AGENT_DIR_MAP[agentFilter];
-    allowedPaths = new Set(['skills', 'agents', '.agents/skills', '.agent/skills']);
-    if (agentDir) allowedPaths.add(agentDir);
+    const agentDirs = AGENT_DIR_MAP[agentFilter] ?? [];
+    allowedPaths = new Set(['skills', 'agents', '.agents/skills', '.agent/skills', ...agentDirs]);
   }
 
   for (const root of roots) {
@@ -217,6 +217,18 @@ export function getLocalSkillDirs(agentFilter?: string): string[] {
       const full = join(root, rel);
       if (existsSync(full) && !dirs.includes(full)) {
         dirs.push(full);
+      }
+    }
+  }
+
+  if (agentFilter) {
+    const agentDirs = AGENT_DIR_MAP[agentFilter] ?? [];
+    for (const rel of agentDirs) {
+      if (!SKILL_DISCOVERY_PATHS.includes(rel)) {
+        const full = join(home, rel);
+        if (existsSync(full) && !dirs.includes(full)) {
+          dirs.push(full);
+        }
       }
     }
   }
@@ -302,8 +314,24 @@ export function handleSkillkitResource(args: unknown) {
     };
   }
 
+  let realPath: string;
+  let realSkillDir: string;
   try {
-    const content = readFileSync(filePath, 'utf-8');
+    realPath = realpathSync(filePath);
+    realSkillDir = realpathSync(skill.path);
+  } catch {
+    realPath = filePath;
+    realSkillDir = resolve(skill.path);
+  }
+  if (!isPathInside(realPath, realSkillDir)) {
+    return {
+      content: [{ type: 'text' as const, text: `Path traversal denied: ${input.file}` }],
+      isError: true,
+    };
+  }
+
+  try {
+    const content = readFileSync(realPath, 'utf-8');
     return {
       content: [
         {
