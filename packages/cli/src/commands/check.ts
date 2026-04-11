@@ -1,8 +1,8 @@
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { Command, Option } from 'clipanion';
 import { findAllSkills, findSkill, detectProvider, isLocalPath, evaluateSkillDirectory } from '@skillkit/core';
-import { getSearchDirs, loadSkillMetadata, formatCount } from '../helpers.js';
+import { getSearchDirs, loadSkillMetadata, formatCount, timeAgo, fetchGitHubActivity } from '../helpers.js';
 import {
   colors,
   symbols,
@@ -133,7 +133,6 @@ export class CheckCommand extends Command {
           const installedSkillMd = join(skill.path, 'SKILL.md');
 
           if (existsSync(sourceSkillMd) && existsSync(installedSkillMd)) {
-            const { statSync } = await import('node:fs');
             const sourceTime = statSync(sourceSkillMd).mtime;
             const installedTime = statSync(installedSkillMd).mtime;
 
@@ -168,7 +167,7 @@ export class CheckCommand extends Command {
           let pushedAt: string | null = null;
 
           if (parsed && provider.name === 'GitHub') {
-            const activity = await this.fetchGitHubActivity(parsed.owner, parsed.repo);
+            const activity = await fetchGitHubActivity(parsed.owner, parsed.repo);
             if (activity) {
               stars = activity.stars;
               pushedAt = activity.pushedAt;
@@ -266,41 +265,10 @@ export class CheckCommand extends Command {
       parts.push(`${formatCount(r.stars)} stars`);
     }
     if (r.pushedAt) {
-      parts.push(`pushed ${this.timeAgo(r.pushedAt)}`);
+      parts.push(`pushed ${timeAgo(r.pushedAt)}`);
     }
     if (parts.length === 0) return '';
     return ` ${colors.muted(`(${parts.join(', ')})`)}`;
   }
 
-  private timeAgo(dateStr: string): string {
-    const now = Date.now();
-    const then = new Date(dateStr).getTime();
-    if (Number.isNaN(then)) return 'unknown';
-    const days = Math.floor((now - then) / 86_400_000);
-    if (days === 0) return 'today';
-    if (days === 1) return 'yesterday';
-    if (days < 30) return `${days}d ago`;
-    if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-    return `${Math.floor(days / 365)}y ago`;
-  }
-
-  private async fetchGitHubActivity(
-    owner: string,
-    repo: string,
-  ): Promise<{ stars: number; pushedAt: string | null } | null> {
-    try {
-      const response = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}`,
-        { signal: AbortSignal.timeout(5000) },
-      );
-      if (!response.ok) return null;
-      const data = (await response.json()) as Record<string, unknown>;
-      return {
-        stars: typeof data.stargazers_count === 'number' ? data.stargazers_count : 0,
-        pushedAt: typeof data.pushed_at === 'string' ? data.pushed_at : null,
-      };
-    } catch {
-      return null;
-    }
-  }
 }
