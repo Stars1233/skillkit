@@ -1,8 +1,21 @@
-import { RelevanceRanker } from '@skillkit/core';
+import {
+  RelevanceRanker,
+  findAllSkills,
+  findSkill,
+  readSkillContent,
+  isPathInside,
+  SKILL_DISCOVERY_PATHS,
+} from '@skillkit/core';
+import { homedir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
 import {
   SearchSkillsInputSchema,
   GetSkillInputSchema,
   RecommendSkillsInputSchema,
+  SkillkitCatalogInputSchema,
+  SkillkitLoadInputSchema,
+  SkillkitResourceInputSchema,
 } from './types.js';
 
 export interface SkillEntry {
@@ -166,4 +179,121 @@ export function handleListCategories(skills: SkillEntry[]) {
       },
     ],
   };
+}
+
+export function getLocalSkillDirs(agentFilter?: string): string[] {
+  const dirs: string[] = [];
+  const home = homedir();
+  const roots = [home, process.cwd()];
+
+  for (const root of roots) {
+    for (const rel of SKILL_DISCOVERY_PATHS) {
+      if (agentFilter) {
+        const dirAgent = rel.replace(/^\./, '').split('/')[0];
+        if (dirAgent !== agentFilter && dirAgent !== 'agents' && dirAgent !== 'skills') continue;
+      }
+      const full = join(root, rel);
+      if (existsSync(full) && !dirs.includes(full)) {
+        dirs.push(full);
+      }
+    }
+  }
+
+  return dirs;
+}
+
+export function handleSkillkitCatalog(args: unknown) {
+  const input = SkillkitCatalogInputSchema.parse(args);
+  const dirs = getLocalSkillDirs(input.agent);
+  const skills = findAllSkills(dirs);
+
+  const catalog = skills.map((s) => ({
+    name: s.name,
+    description: s.description,
+    source: s.location,
+  }));
+
+  return {
+    content: [
+      {
+        type: 'text' as const,
+        text: JSON.stringify({ skills: catalog, total: catalog.length }, null, 2),
+      },
+    ],
+  };
+}
+
+export function handleSkillkitLoad(args: unknown) {
+  const input = SkillkitLoadInputSchema.parse(args);
+  const dirs = getLocalSkillDirs();
+  const skill = findSkill(input.name, dirs);
+
+  if (!skill) {
+    return {
+      content: [{ type: 'text' as const, text: `Skill not found: ${input.name}` }],
+      isError: true,
+    };
+  }
+
+  const content = readSkillContent(skill.path);
+  if (!content) {
+    return {
+      content: [{ type: 'text' as const, text: `Could not read skill content: ${input.name}` }],
+      isError: true,
+    };
+  }
+
+  return {
+    content: [
+      {
+        type: 'text' as const,
+        text: content,
+      },
+    ],
+  };
+}
+
+export function handleSkillkitResource(args: unknown) {
+  const input = SkillkitResourceInputSchema.parse(args);
+  const dirs = getLocalSkillDirs();
+  const skill = findSkill(input.name, dirs);
+
+  if (!skill) {
+    return {
+      content: [{ type: 'text' as const, text: `Skill not found: ${input.name}` }],
+      isError: true,
+    };
+  }
+
+  const filePath = resolve(join(skill.path, input.file));
+  if (!isPathInside(filePath, skill.path)) {
+    return {
+      content: [{ type: 'text' as const, text: `Path traversal denied: ${input.file}` }],
+      isError: true,
+    };
+  }
+
+  if (!existsSync(filePath)) {
+    return {
+      content: [{ type: 'text' as const, text: `File not found: ${input.file}` }],
+      isError: true,
+    };
+  }
+
+  try {
+    const content = readFileSync(filePath, 'utf-8');
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: content,
+        },
+      ],
+    };
+  } catch {
+    return {
+      content: [{ type: 'text' as const, text: `Could not read file: ${input.file}` }],
+      isError: true,
+    };
+  }
 }

@@ -13,6 +13,9 @@ import {
   handleGetSkill,
   handleRecommendSkills,
   handleListCategories,
+  handleSkillkitCatalog,
+  handleSkillkitLoad,
+  handleSkillkitResource,
 } from './tools.js';
 import type { SkillEntry } from './tools.js';
 import { getTrendingResource, getCategoriesResource } from './resources.js';
@@ -55,7 +58,7 @@ async function loadSkills(): Promise<SkillEntry[]> {
 const server = new Server(
   {
     name: 'skillkit-discovery',
-    version: '1.17.0',
+    version: '1.21.0',
   },
   {
     capabilities: {
@@ -125,6 +128,39 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {},
         },
       },
+      {
+        name: 'skillkit_catalog',
+        description: 'List all installed skills with name and description. Use this first to see what skills are available. Each entry costs ~50 tokens.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            agent: { type: 'string', description: 'Filter by agent type (e.g. claude-code, cursor)' },
+          },
+        },
+      },
+      {
+        name: 'skillkit_load',
+        description: 'Load the full content of a specific installed skill. Call this only when you need the detailed instructions for a skill found via skillkit_catalog.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Skill name from the catalog' },
+          },
+          required: ['name'],
+        },
+      },
+      {
+        name: 'skillkit_resource',
+        description: 'Load a specific reference file from within a skill directory. Use when a skill references external files.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Skill name' },
+            file: { type: 'string', description: 'Relative file path within the skill (e.g. references/api.md)' },
+          },
+          required: ['name', 'file'],
+        },
+      },
     ],
   };
 });
@@ -142,6 +178,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return handleRecommendSkills(skills, args);
       case 'list_categories':
         return handleListCategories(skills);
+      case 'skillkit_catalog':
+        return handleSkillkitCatalog(args);
+      case 'skillkit_load':
+        return handleSkillkitLoad(args);
+      case 'skillkit_resource':
+        return handleSkillkitResource(args);
       default:
         return {
           content: [{ type: 'text', text: `Unknown tool: ${name}` }],

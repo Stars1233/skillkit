@@ -31,6 +31,22 @@ export const RecommendSkillsInputSchema = z.object({
 
 export const ListCategoriesInputSchema = z.object({});
 
+export const SkillkitCatalogInputSchema = z.object({
+  agent: z.string().optional().describe('Filter by agent type (e.g. claude-code, cursor)'),
+});
+
+export const SkillkitLoadInputSchema = z.object({
+  name: z.string().describe('Skill name from the catalog'),
+});
+
+export const SkillkitResourceInputSchema = z.object({
+  name: z.string().describe('Skill name'),
+  file: z.string().describe('Relative file path within the skill (e.g. references/api.md)'),
+});
+
 export type SearchSkillsInput = z.infer<typeof SearchSkillsInputSchema>;
 export type GetSkillInput = z.infer<typeof GetSkillInputSchema>;
 export type RecommendSkillsInput = z.infer<typeof RecommendSkillsInputSchema>;
+export type SkillkitCatalogInput = z.infer<typeof SkillkitCatalogInputSchema>;
+export type SkillkitLoadInput = z.infer<typeof SkillkitLoadInputSchema>;
+export type SkillkitResourceInput = z.infer<typeof SkillkitResourceInputSchema>;
