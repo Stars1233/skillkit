@@ -1,8 +1,8 @@
 import { existsSync, rmSync, cpSync } from 'node:fs';
 import { join } from 'node:path';
 import { Command, Option } from 'clipanion';
-import { findAllSkills, findSkill, detectProvider, isLocalPath } from '@skillkit/core';
-import { getSearchDirs, loadSkillMetadata, saveSkillMetadata } from '../helpers.js';
+import { findAllSkills, findSkill, detectProvider, isLocalPath, computeSkillChecksum } from '@skillkit/core';
+import { getSearchDirs, loadSkillMetadata, saveSkillMetadata, fetchGitHubActivity } from '../helpers.js';
 import { colors, spinner, warn, step } from '../onboarding/index.js';
 
 export class UpdateCommand extends Command {
@@ -100,6 +100,16 @@ export class UpdateCommand extends Command {
             continue;
           }
 
+          const parsed = provider.parseSource?.(metadata.source);
+          if (parsed && 'owner' in parsed && 'repo' in parsed) {
+            const activity = await fetchGitHubActivity(parsed.owner, parsed.repo);
+            if (activity?.pushedAt && metadata.updatedAt && activity.pushedAt <= metadata.updatedAt) {
+              s.stop(`${skill.name}: no changes detected`);
+              skipped++;
+              continue;
+            }
+          }
+
           const result = await provider.clone(metadata.source, '', { depth: 1 });
 
           if (!result.success || !result.path) {
@@ -120,11 +130,20 @@ export class UpdateCommand extends Command {
             continue;
           }
 
+          const newChecksum = computeSkillChecksum(sourcePath);
+          if (newChecksum && metadata.checksum && newChecksum === metadata.checksum) {
+            s.stop(`${skill.name}: already up to date`);
+            rmSync(result.path, { recursive: true, force: true });
+            skipped++;
+            continue;
+          }
+
           rmSync(skill.path, { recursive: true, force: true });
           cpSync(sourcePath, skill.path, { recursive: true, dereference: true });
 
           rmSync(result.path, { recursive: true, force: true });
 
+          metadata.checksum = computeSkillChecksum(skill.path);
           metadata.updatedAt = new Date().toISOString();
           saveSkillMetadata(skill.path, metadata);
 

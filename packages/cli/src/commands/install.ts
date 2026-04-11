@@ -28,6 +28,7 @@ import {
   SkillsShRegistry,
   TrustScorer,
   readSkillContent,
+  computeSkillChecksum,
 } from "@skillkit/core";
 import type { SkillsShStats } from "@skillkit/core";
 import type { SkillMetadata, GitProvider, AgentType } from "@skillkit/core";
@@ -580,6 +581,7 @@ export class InstallCommand extends Command {
             installedAt: new Date().toISOString(),
             enabled: true,
           };
+          metadata.checksum = computeSkillChecksum(targetPath);
           saveSkillMetadata(targetPath, metadata);
 
           installedAgents.push(agentType);

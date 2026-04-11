@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { homedir } from 'node:os';
+import { createHash } from 'node:crypto';
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import { SkillkitConfig, type AgentType, type SkillMetadata, type AgentAdapterInfo } from './types.js';
 
@@ -148,6 +149,12 @@ export function setSkillEnabled(skillPath: string, enabled: boolean): boolean {
   saveSkillMetadata(skillPath, metadata);
 
   return true;
+}
+
+export function computeSkillChecksum(skillPath: string): string {
+  const mdPath = skillPath.endsWith('.md') ? skillPath : join(skillPath, 'SKILL.md');
+  if (!existsSync(mdPath)) return '';
+  return createHash('sha256').update(readFileSync(mdPath)).digest('hex').slice(0, 16);
 }
 
 export async function initProject(
