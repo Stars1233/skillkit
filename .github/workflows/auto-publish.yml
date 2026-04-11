@@ -65,7 +65,7 @@ jobs:
               return;
             }
 
-            const source = entry.source || entry.owner && entry.repo ? `${entry.owner}/${entry.repo}` : null;
+            const source = entry.source || (entry.owner && entry.repo ? `${entry.owner}/${entry.repo}` : null);
             const name = entry.name;
             const description = entry.description || '';
 
@@ -215,15 +215,20 @@ jobs:
 
       - name: Add source and commit
         if: steps.validate.outputs.status == 'pass'
+        env:
+          SKILL_SOURCE: ${{ steps.validate.outputs.source }}
+          SKILL_NAME: ${{ steps.validate.outputs.name }}
+          SKILL_DESCRIPTION: ${{ steps.validate.outputs.description }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           node -e "
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('marketplace/sources.json', 'utf-8'));
 
-            const newEntry = { source: '${{ steps.validate.outputs.source }}', name: '${{ steps.validate.outputs.name }}' };
+            const newEntry = { source: process.env.SKILL_SOURCE, name: process.env.SKILL_NAME };
 
-            if ('${{ steps.validate.outputs.description }}') {
-              newEntry.description = '${{ steps.validate.outputs.description }}';
+            if (process.env.SKILL_DESCRIPTION) {
+              newEntry.description = process.env.SKILL_DESCRIPTION;
             }
 
             const skillsSh = data.sources.pop();
@@ -239,66 +244,81 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add marketplace/sources.json
-          git commit -m "feat(marketplace): add source ${{ steps.validate.outputs.source }} from #${{ github.event.issue.number }}"
+          git commit -m "feat(marketplace): add source from #${ISSUE_NUMBER}"
           git push
 
       - name: Close issue on success
         if: steps.validate.outputs.status == 'pass'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKILL_SOURCE: ${{ steps.validate.outputs.source }}
+          SKILL_NAME: ${{ steps.validate.outputs.name }}
+          SCAN_SUMMARY: ${{ steps.validate.outputs.scan_summary }}
+          QUALITY_SUMMARY: ${{ steps.validate.outputs.quality_summary }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body "$(cat <<'EOF'
+          cat > /tmp/comment.md <<ENDOFCOMMENT
           **Skill source auto-published!**
 
-          **Source:** `${{ steps.validate.outputs.source }}`
-          **Name:** ${{ steps.validate.outputs.name }}
-          **Security:** ${{ steps.validate.outputs.scan_summary }}
-          **Quality:** ${{ steps.validate.outputs.quality_summary }}
+          **Source:** \`${SKILL_SOURCE}\`
+          **Name:** ${SKILL_NAME}
+          **Security:** ${SCAN_SUMMARY}
+          **Quality:** ${QUALITY_SUMMARY}
 
-          The source has been added to `marketplace/sources.json` and will be included in the next release.
-          EOF
-          )"
-          gh issue close ${{ github.event.issue.number }}
+          The source has been added to \`marketplace/sources.json\` and will be included in the next release.
+          ENDOFCOMMENT
+          gh issue comment "${ISSUE_NUMBER}" --body-file /tmp/comment.md
+          gh issue close "${ISSUE_NUMBER}"
 
       - name: Comment rejection reason
         if: steps.validate.outputs.status == 'reject'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REJECT_MESSAGE: ${{ steps.validate.outputs.message }}
+          SCAN_VERDICT: ${{ steps.validate.outputs.scan_verdict }}
+          SCAN_SUMMARY: ${{ steps.validate.outputs.scan_summary }}
+          QUALITY_SCORE: ${{ steps.validate.outputs.quality_score }}
+          QUALITY_SUMMARY: ${{ steps.validate.outputs.quality_summary }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body "$(cat <<'EOF'
+          cat > /tmp/comment.md <<ENDOFCOMMENT
           **Skill submission did not pass automated checks.**
 
-          ${{ steps.validate.outputs.message }}
+          ${REJECT_MESSAGE}
 
           **Details:**
-          - Security scan: ${{ steps.validate.outputs.scan_verdict }} (${{ steps.validate.outputs.scan_summary }})
-          - Quality score: ${{ steps.validate.outputs.quality_score }}/100 (${{ steps.validate.outputs.quality_summary }})
+          - Security scan: ${SCAN_VERDICT} (${SCAN_SUMMARY})
+          - Quality score: ${QUALITY_SCORE}/100 (${QUALITY_SUMMARY})
 
           Please address these issues and update your submission. A maintainer will review manually.
-          EOF
-          )"
-          gh issue edit ${{ github.event.issue.number }} --add-label "needs-review"
+          ENDOFCOMMENT
+          gh issue comment "${ISSUE_NUMBER}" --body-file /tmp/comment.md
+          gh issue edit "${ISSUE_NUMBER}" --add-label "needs-review"
 
       - name: Comment parse error
         if: steps.validate.outputs.status == 'error'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ERROR_MESSAGE: ${{ steps.validate.outputs.message }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body "$(cat <<'EOF'
+          cat > /tmp/comment.md <<'ENDOFCOMMENT'
           **Could not process skill submission.**
 
-          ${{ steps.validate.outputs.message }}
+          ENDOFCOMMENT
+          echo "${ERROR_MESSAGE}" >> /tmp/comment.md
+          cat >> /tmp/comment.md <<'ENDOFCOMMENT'
 
           **Expected format in issue body:**
-          \`\`\`json
+          ```json
           {
             "source": "owner/repo",
             "name": "Display Name",
             "description": "Optional description"
           }
-          \`\`\`
+          ```
 
           Please update the issue body and re-apply the `skill-submission` label.
-          EOF
-          )"
-          gh issue edit ${{ github.event.issue.number }} --add-label "needs-review"
+          ENDOFCOMMENT
+          gh issue comment "${ISSUE_NUMBER}" --body-file /tmp/comment.md
+          gh issue edit "${ISSUE_NUMBER}" --add-label "needs-review"
