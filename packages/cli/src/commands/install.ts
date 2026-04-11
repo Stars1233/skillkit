@@ -451,7 +451,7 @@ export class InstallCommand extends Command {
     const sourceProvider = detectProvider(this.source);
     const parsedSource = sourceProvider?.parseSource(this.source);
     const normalizedSource = parsedSource ? `${parsedSource.owner}/${parsedSource.repo}` : this.source;
-    const isOfficial = officialSources.includes(normalizedSource);
+    const isOfficial = sourceProvider?.type === "github" && officialSources.includes(normalizedSource);
 
     const scorer = new TrustScorer();
     for (const skill of skillsToInstall) {
