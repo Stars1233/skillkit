@@ -1,7 +1,7 @@
 import { Command, Option } from 'clipanion';
 import { resolve, join } from 'node:path';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { colors, warn, success, error, step } from '../onboarding/index.js';
+import { colors, warn, success, error, step, spinner } from '../onboarding/index.js';
 import {
   runTestSuite,
   createTestSuiteFromFrontmatter,
@@ -105,16 +105,16 @@ export class TestCommand extends Command {
       return 1;
     }
 
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
+
     if (!this.json) {
       console.log(colors.bold('Running skill tests...\n'));
     }
 
-    // Parse tags
     const tags = this.tags?.split(',').map((t) => t.trim());
     const skipTags = this.skipTags?.split(',').map((t) => t.trim());
     const timeout = this.timeout ? parseInt(this.timeout, 10) : undefined;
 
-    // Run tests for each skill
     const results: TestSuiteResult[] = [];
     let allPassed = true;
 
@@ -128,6 +128,7 @@ export class TestCommand extends Command {
       if (!this.json) {
         step(`Testing: ${suite.skillName}`);
       }
+      s.start(`Running ${suite.skillName}`);
 
       const result = await runTestSuite(suite, {
         cwd: targetPath,
@@ -162,6 +163,7 @@ export class TestCommand extends Command {
         },
       });
 
+      s.stop(`Completed ${suite.skillName}`);
       results.push(result);
 
       if (!result.passed) {

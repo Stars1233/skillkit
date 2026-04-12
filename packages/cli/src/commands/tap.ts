@@ -1,5 +1,5 @@
 import { Command, Option } from 'clipanion';
-import { colors, symbols, step, success, warn } from '../onboarding/index.js';
+import { colors, symbols, step, success, warn, spinner } from '../onboarding/index.js';
 import { loadTaps, saveTaps } from '../helpers.js';
 
 export class TapAddCommand extends Command {
@@ -19,14 +19,25 @@ export class TapAddCommand extends Command {
     description: 'Display name for the tap',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
     const taps = loadTaps();
 
     const exists = taps.taps.some((t) => t.source === this.source);
     if (exists) {
-      warn(`Tap already exists: ${this.source}`);
+      if (this.json) {
+        console.log(JSON.stringify({ success: true, source: this.source }));
+      } else {
+        warn(`Tap already exists: ${this.source}`);
+      }
       return 0;
     }
+
+    s.start('Adding tap');
 
     taps.taps.push({
       source: this.source,
@@ -35,8 +46,14 @@ export class TapAddCommand extends Command {
     });
     saveTaps(taps);
 
-    success(`Added tap: ${this.source}${this.name ? ` (${this.name})` : ''}`);
-    console.log(colors.muted('Skills from this source will appear in search results'));
+    s.stop('Tap added');
+
+    if (this.json) {
+      console.log(JSON.stringify({ success: true, source: this.source }));
+    } else {
+      success(`Added tap: ${this.source}${this.name ? ` (${this.name})` : ''}`);
+      console.log(colors.muted('Skills from this source will appear in search results'));
+    }
     return 0;
   }
 }
@@ -53,19 +70,34 @@ export class TapRemoveCommand extends Command {
 
   source = Option.String({ required: true });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
     const taps = loadTaps();
 
     const idx = taps.taps.findIndex((t) => t.source === this.source);
     if (idx === -1) {
-      warn(`Tap not found: ${this.source}`);
+      if (this.json) {
+        console.log(JSON.stringify({ success: true, source: this.source }));
+      } else {
+        warn(`Tap not found: ${this.source}`);
+      }
       return 0;
     }
 
+    s.start('Removing tap');
     taps.taps.splice(idx, 1);
     saveTaps(taps);
+    s.stop('Tap removed');
 
-    success(`Removed tap: ${this.source}`);
+    if (this.json) {
+      console.log(JSON.stringify({ success: true, source: this.source }));
+    } else {
+      success(`Removed tap: ${this.source}`);
+    }
     return 0;
   }
 }
@@ -80,8 +112,17 @@ export class TapListCommand extends Command {
     ],
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const taps = loadTaps();
+
+    if (this.json) {
+      console.log(JSON.stringify({ taps: taps.taps }));
+      return 0;
+    }
 
     if (taps.taps.length === 0) {
       step('No custom taps configured');

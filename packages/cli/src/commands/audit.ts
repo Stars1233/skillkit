@@ -2,7 +2,7 @@ import { Command, Option } from 'clipanion';
 import { resolve } from 'node:path';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { colors, warn, success } from '../onboarding/index.js';
+import { colors, warn, success, spinner } from '../onboarding/index.js';
 import { AuditLogger, type AuditQuery, type AuditEventType } from '@skillkit/core';
 
 export class AuditCommand extends Command {
@@ -114,8 +114,11 @@ export class AuditCommand extends Command {
   }
 
   private async handleLog(logger: AuditLogger): Promise<number> {
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
+    s.start('Querying audit log');
     const query = this.buildQuery();
     const events = await logger.query(query);
+    s.stop('Query complete');
 
     if (this.json) {
       console.log(JSON.stringify(events, null, 2));
@@ -163,10 +166,13 @@ export class AuditCommand extends Command {
   }
 
   private async handleExport(logger: AuditLogger): Promise<number> {
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
     const format = (this.format as 'json' | 'csv' | 'text') || 'json';
     const query = this.buildQuery();
 
+    s.start('Exporting audit log');
     const content = await logger.export({ format, query });
+    s.stop('Export complete');
 
     if (this.output) {
       const outputPath = resolve(this.output);
@@ -180,7 +186,10 @@ export class AuditCommand extends Command {
   }
 
   private async handleStats(logger: AuditLogger): Promise<number> {
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
+    s.start('Computing statistics');
     const stats = await logger.stats();
+    s.stop('Statistics computed');
 
     if (this.json) {
       console.log(JSON.stringify(stats, null, 2));
@@ -237,9 +246,16 @@ export class AuditCommand extends Command {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysAgo);
 
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
+    s.start('Clearing old entries');
     const cleared = await logger.clear(cutoffDate);
+    s.stop('Clear complete');
 
-    success(`✓ Cleared ${cleared} audit entries older than ${daysAgo} days`);
+    if (this.json) {
+      console.log(JSON.stringify({ success: true, cleared, days: daysAgo }));
+    } else {
+      success(`✓ Cleared ${cleared} audit entries older than ${daysAgo} days`);
+    }
 
     return 0;
   }

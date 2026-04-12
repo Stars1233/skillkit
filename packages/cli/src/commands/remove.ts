@@ -1,6 +1,6 @@
 import { existsSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
-import { colors, warn, success, error } from '../onboarding/index.js';
+import { colors, warn, success, error, spinner } from '../onboarding/index.js';
 import { Command, Option } from 'clipanion';
 import { findSkill, findAllSkills, loadMetadata, AgentsMdParser, AgentsMdGenerator, removeSkillFromLock } from '@skillkit/core';
 import { getSearchDirs } from '../helpers.js';
@@ -89,6 +89,8 @@ export class RemoveCommand extends Command {
     let failed = 0;
     const removedNames: string[] = [];
     const failedNames: string[] = [];
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
+    s.start('Removing skills');
 
     for (const { name: skillName, path: skillPath } of skillsToRemove) {
       if (!existsSync(skillPath)) {
@@ -115,6 +117,8 @@ export class RemoveCommand extends Command {
         failed++;
       }
     }
+
+    s.stop(`Removed ${removed} skill(s)`);
 
     if (removed > 0) {
       try {

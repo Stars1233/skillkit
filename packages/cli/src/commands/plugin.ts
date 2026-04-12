@@ -8,7 +8,7 @@ import { Command, Option } from 'clipanion';
 import { join, isAbsolute, resolve, sep } from 'node:path';
 import { homedir } from 'node:os';
 import { existsSync, mkdirSync, copyFileSync, cpSync, rmSync } from 'node:fs';
-import { colors } from '../onboarding/index.js';
+import { colors, spinner } from '../onboarding/index.js';
 import { createPluginManager, loadPlugin, loadPluginsFromDirectory } from '@skillkit/core';
 
 export class PluginCommand extends Command {
@@ -149,7 +149,8 @@ export class PluginCommand extends Command {
       ? join(homedir(), this.source.slice(1))
       : this.source;
 
-    this.context.stdout.write(`Installing plugin from ${this.source}...\n`);
+    const s = spinner();
+    s.start(`Installing plugin from ${this.source}`);
 
     const plugin = await loadPlugin(resolvedSource);
 
@@ -222,6 +223,8 @@ export class PluginCommand extends Command {
 
     await pluginManager.register(plugin);
 
+    s.stop('Plugin installed');
+
     this.context.stdout.write(colors.success(`✓ Plugin "${plugin.metadata.name}" installed!\n`));
     this.context.stdout.write(`  Version: ${plugin.metadata.version}\n`);
     if (plugin.metadata.description) {
@@ -254,9 +257,10 @@ export class PluginCommand extends Command {
       return 1;
     }
 
-    await pluginManager.unregister(this.name);
+    const s = spinner();
+    s.start(`Uninstalling plugin ${this.name}`);
 
-    // Remove plugin files from disk
+    await pluginManager.unregister(this.name);
     const projectPath = this.global
       ? join(homedir(), '.skillkit')
       : process.cwd();
@@ -275,8 +279,9 @@ export class PluginCommand extends Command {
 
     if (existsSync(pluginDir)) {
       rmSync(pluginDir, { recursive: true, force: true });
-      this.context.stdout.write(colors.muted(`  Removed ${pluginDir}\n`));
     }
+
+    s.stop('Plugin uninstalled');
 
     this.context.stdout.write(colors.success(`✓ Plugin "${this.name}" uninstalled.\n`));
     return 0;

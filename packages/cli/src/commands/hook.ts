@@ -5,7 +5,7 @@
  */
 
 import { Command, Option } from 'clipanion';
-import { colors } from '../onboarding/index.js';
+import { colors, spinner } from '../onboarding/index.js';
 import { createHookManager, type HookEvent, type InjectionMode } from '@skillkit/core';
 import {
   getHookTemplates,
@@ -239,7 +239,10 @@ export class HookCommand extends Command {
     }
 
     const agent = this.agent || 'claude-code';
+    const s = spinner();
+    s.start(`Generating hooks for ${agent}`);
     const generated = manager.generateAgentHooks(agent as any);
+    s.stop('Hooks generated');
 
     this.context.stdout.write(colors.cyan(`Generated hooks for ${agent}:\n\n`));
 

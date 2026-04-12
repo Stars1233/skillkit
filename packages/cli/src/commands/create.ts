@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { colors, success, error, step } from '../onboarding/index.js';
+import { colors, success, error, step, spinner } from '../onboarding/index.js';
 import { Command, Option } from 'clipanion';
 
 export class CreateCommand extends Command {
@@ -37,12 +37,21 @@ export class CreateCommand extends Command {
     description: 'Parent directory to create skill in (default: current directory)',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const skillName = this.name.toLowerCase();
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
 
     if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(skillName)) {
-      error('Invalid skill name');
-      console.log(colors.muted('Must be lowercase alphanumeric with hyphens (e.g., my-skill)'));
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: 'Invalid skill name' }));
+      } else {
+        error('Invalid skill name');
+        console.log(colors.muted('Must be lowercase alphanumeric with hyphens (e.g., my-skill)'));
+      }
       return 1;
     }
 
@@ -50,11 +59,17 @@ export class CreateCommand extends Command {
     const skillDir = join(parentDir, skillName);
 
     if (existsSync(skillDir)) {
-      error(`Directory already exists: ${skillDir}`);
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: `Directory already exists: ${skillDir}` }));
+      } else {
+        error(`Directory already exists: ${skillDir}`);
+      }
       return 1;
     }
 
     try {
+      s.start('Creating skill');
+
       mkdirSync(skillDir, { recursive: true });
 
       const skillMd = generateSkillMd(skillName);
@@ -78,24 +93,35 @@ export class CreateCommand extends Command {
         writeFileSync(join(assetsDir, '.gitkeep'), '');
       }
 
-      success(`Created skill: ${skillName}`);
-      console.log();
-      console.log(colors.muted('Structure:'));
-      console.log(colors.muted(`  ${skillDir}/`));
-      console.log(colors.muted('  ├── SKILL.md'));
-      if (this.full || this.references) console.log(colors.muted('  ├── references/'));
-      if (this.full || this.scripts) console.log(colors.muted('  ├── scripts/'));
-      if (this.full || this.assets) console.log(colors.muted('  └── assets/'));
-      console.log();
-      step('Next steps:');
-      console.log(colors.muted('  1. Edit SKILL.md with your instructions'));
-      console.log(colors.muted('  2. Validate: skillkit validate ' + skillDir));
-      console.log(colors.muted('  3. Test: skillkit read ' + skillName));
+      s.stop('Skill created');
+
+      if (this.json) {
+        console.log(JSON.stringify({ success: true, name: skillName, path: skillDir }));
+      } else {
+        success(`Created skill: ${skillName}`);
+        console.log();
+        console.log(colors.muted('Structure:'));
+        console.log(colors.muted(`  ${skillDir}/`));
+        console.log(colors.muted('  ├── SKILL.md'));
+        if (this.full || this.references) console.log(colors.muted('  ├── references/'));
+        if (this.full || this.scripts) console.log(colors.muted('  ├── scripts/'));
+        if (this.full || this.assets) console.log(colors.muted('  └── assets/'));
+        console.log();
+        step('Next steps:');
+        console.log(colors.muted('  1. Edit SKILL.md with your instructions'));
+        console.log(colors.muted('  2. Validate: skillkit validate ' + skillDir));
+        console.log(colors.muted('  3. Test: skillkit read ' + skillName));
+      }
 
       return 0;
     } catch (err) {
-      error('Failed to create skill');
-      console.log(colors.muted(err instanceof Error ? err.message : String(err)));
+      s.stop('Failed');
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: err instanceof Error ? err.message : String(err) }));
+      } else {
+        error('Failed to create skill');
+        console.log(colors.muted(err instanceof Error ? err.message : String(err)));
+      }
       return 1;
     }
   }
