@@ -121,7 +121,7 @@ export class FindCommand extends Command {
         )
         .slice(0, limit);
 
-      if (!this.quiet) {
+      if (!this.quiet && !this.json) {
         step("Showing featured skills");
       }
     } else if (this.query) {
@@ -142,7 +142,7 @@ export class FindCommand extends Command {
 
       s.stop(`Found ${results.length} skill(s)`);
     } else {
-      if (!this.quiet) {
+      if (!this.quiet && !this.json) {
         step("Enter a search term or browse featured skills");
       }
 

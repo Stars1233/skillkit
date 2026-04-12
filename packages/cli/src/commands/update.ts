@@ -39,7 +39,7 @@ export class UpdateCommand extends Command {
         .filter((s): s is NonNullable<typeof s> => s !== null);
 
       const notFound = this.skills.filter(name => !findSkill(name, searchDirs));
-      if (notFound.length > 0) {
+      if (notFound.length > 0 && !this.json) {
         warn(`Skills not found: ${notFound.join(', ')}`);
       }
     } else {
@@ -47,7 +47,11 @@ export class UpdateCommand extends Command {
     }
 
     if (skillsToUpdate.length === 0) {
-      warn('No skills to update');
+      if (this.json) {
+        console.log(JSON.stringify({ updated: 0, skipped: 0, failed: 0 }));
+      } else {
+        warn('No skills to update');
+      }
       return 0;
     }
 
@@ -61,7 +65,7 @@ export class UpdateCommand extends Command {
       const metadata = loadSkillMetadata(skill.path);
 
       if (!metadata) {
-        console.log(colors.muted(`Skipping ${skill.name} (no metadata, reinstall needed)`));
+        if (!this.json) console.log(colors.muted(`Skipping ${skill.name} (no metadata, reinstall needed)`));
         skipped++;
         continue;
       }
@@ -176,7 +180,7 @@ export class UpdateCommand extends Command {
         }
       } catch (err) {
         s.stop(colors.error(`Failed to update ${skill.name}`));
-        console.log(colors.muted(err instanceof Error ? err.message : String(err)));
+        if (!this.json) console.log(colors.muted(err instanceof Error ? err.message : String(err)));
         failed++;
       }
     }

@@ -55,22 +55,30 @@ export class RemoveCommand extends Command {
           return meta?.source?.includes(this.source!) ?? false;
         }).map((s) => ({ name: s.name, path: s.path }));
         if (skillsToRemove.length === 0) {
-          warn(`No skills found from source: ${this.source}`);
+          if (this.json) {
+            console.log(JSON.stringify({ success: true, removed: [], failed: [], total: 0 }));
+          } else {
+            warn(`No skills found from source: ${this.source}`);
+          }
           return 0;
         }
       } else {
         skillsToRemove = allSkills.map((s) => ({ name: s.name, path: s.path }));
         if (skillsToRemove.length === 0) {
-          warn('No installed skills found');
+          if (this.json) {
+            console.log(JSON.stringify({ success: true, removed: [], failed: [], total: 0 }));
+          } else {
+            warn('No installed skills found');
+          }
           return 0;
         }
       }
-      console.log(colors.muted(`Found ${skillsToRemove.length} skill(s) to remove`));
+      if (!this.json) console.log(colors.muted(`Found ${skillsToRemove.length} skill(s) to remove`));
     } else {
       for (const skillName of this.skills) {
         const skill = findSkill(skillName, searchDirs);
         if (!skill) {
-          warn(`Skill not found: ${skillName}`);
+          if (!this.json) warn(`Skill not found: ${skillName}`);
           continue;
         }
         skillsToRemove.push({ name: skill.name, path: skill.path });

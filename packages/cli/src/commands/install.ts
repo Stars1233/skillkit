@@ -186,8 +186,12 @@ export class InstallCommand extends Command {
 
       return 0;
     } catch (err) {
-      s.stop(colors.error("Installation failed"));
-      console.log(colors.muted(err instanceof Error ? err.message : String(err)));
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: err instanceof Error ? err.message : String(err) }));
+      } else {
+        s.stop(colors.error("Installation failed"));
+        console.log(colors.muted(err instanceof Error ? err.message : String(err)));
+      }
       return 1;
     } finally {
       if (cloneResult) this.cleanupTemp(cloneResult);
