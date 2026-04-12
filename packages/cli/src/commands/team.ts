@@ -5,7 +5,7 @@
  */
 
 import { Command, Option } from 'clipanion';
-import { colors } from '../onboarding/index.js';
+import { colors, spinner } from '../onboarding/index.js';
 import { createTeamManager, createSkillBundle, exportBundle, importBundle } from '@skillkit/core';
 import { join } from 'node:path';
 
@@ -82,10 +82,13 @@ export class TeamCommand extends Command {
       return 1;
     }
 
+    const s = spinner();
+    s.start('Initializing team');
     const config = await teamManager.init({
       teamName: this.name,
       registryUrl: this.registry,
     });
+    s.stop('Team initialized');
 
     this.context.stdout.write(colors.success('✓ Team initialized!\n'));
     this.context.stdout.write(`  Team ID: ${config.teamId}\n`);
@@ -105,11 +108,14 @@ export class TeamCommand extends Command {
       return 1;
     }
 
+    const s = spinner();
+    s.start('Sharing skill');
     const shared = await teamManager.shareSkill({
       skillName: this.name,
       description: this.description,
       tags: this.tags?.split(',').map((t) => t.trim()),
     });
+    s.stop('Skill shared');
 
     this.context.stdout.write(colors.success('✓ Skill shared!\n'));
     this.context.stdout.write(`  Name: ${shared.name}\n`);
@@ -130,10 +136,13 @@ export class TeamCommand extends Command {
       return 1;
     }
 
+    const s = spinner();
+    s.start('Importing skill');
     const result = await teamManager.importSkill(this.name, {
       overwrite: this.overwrite,
       dryRun: this.dryRun,
     });
+    s.stop('Import complete');
 
     if (!result.success) {
       this.context.stderr.write(colors.error(`✗ ${result.error}\n`));
@@ -184,9 +193,11 @@ export class TeamCommand extends Command {
       return 1;
     }
 
-    this.context.stdout.write(`Syncing with ${config.registryUrl}...\n`);
+    const s = spinner();
+    s.start(`Syncing with ${config.registryUrl}`);
 
     const result = await teamManager.sync();
+    s.stop('Sync complete');
 
     this.context.stdout.write(colors.success('✓ Sync complete!\n'));
     if (result.added.length > 0) {
@@ -335,7 +346,10 @@ export class TeamCommand extends Command {
       return 0;
     }
 
+    const s = spinner();
+    s.start('Importing bundle');
     const result = importBundle(this.source, skillsDir, { overwrite: this.overwrite });
+    s.stop('Import complete');
 
     if (!result.success && result.imported.length === 0) {
       this.context.stderr.write(colors.error('✗ Failed to import bundle:\n'));

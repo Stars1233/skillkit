@@ -5,7 +5,7 @@
  */
 
 import { Command, Option } from 'clipanion';
-import { colors } from '../onboarding/index.js';
+import { colors, spinner } from '../onboarding/index.js';
 import { createMethodologyManager, createMethodologyLoader } from '@skillkit/core';
 
 export class MethodologyCommand extends Command {
@@ -61,8 +61,11 @@ export class MethodologyCommand extends Command {
   }
 
   private async listPacks(): Promise<number> {
+    const s = spinner();
+    s.start('Loading methodology packs');
     const loader = createMethodologyLoader();
     const packs = await loader.loadAllPacks();
+    s.stop('Packs loaded');
 
     if (packs.length === 0) {
       this.context.stdout.write('No methodology packs available.\n');
@@ -91,15 +94,16 @@ export class MethodologyCommand extends Command {
     if (this.target) {
       // Check if it's a skill ID (pack/skill) or pack name
       if (this.target.includes('/')) {
-        // Install single skill
-        this.context.stdout.write(`Installing skill: ${colors.cyan(this.target)}...\n`);
+        const s = spinner();
 
         if (this.dryRun) {
           this.context.stdout.write(colors.warning('[dry-run] Would install skill.\n'));
           return 0;
         }
 
+        s.start(`Installing skill: ${this.target}`);
         const result = await manager.installSkill(this.target);
+        s.stop('Install complete');
 
         if (result.success) {
           this.context.stdout.write(colors.success(`✓ Skill installed: ${this.target}\n`));
@@ -110,8 +114,7 @@ export class MethodologyCommand extends Command {
           return 1;
         }
       } else {
-        // Install single pack
-        this.context.stdout.write(`Installing pack: ${colors.cyan(this.target)}...\n`);
+        const s = spinner();
 
         if (this.dryRun) {
           const pack = await loader.loadPack(this.target);
@@ -121,7 +124,9 @@ export class MethodologyCommand extends Command {
           return 0;
         }
 
+        s.start(`Installing pack: ${this.target}`);
         const result = await manager.installPack(this.target);
+        s.stop('Pack installed');
 
         if (result.success) {
           this.context.stdout.write(colors.success(`✓ Pack "${this.target}" installed!\n`));
@@ -138,8 +143,7 @@ export class MethodologyCommand extends Command {
         }
       }
     } else {
-      // Install all packs
-      this.context.stdout.write('Installing all methodology packs...\n\n');
+      const s = spinner();
 
       if (this.dryRun) {
         const packs = await loader.loadAllPacks();
@@ -152,7 +156,9 @@ export class MethodologyCommand extends Command {
         return 0;
       }
 
+      s.start('Installing all methodology packs');
       const result = await manager.installAllPacks();
+      s.stop('Installation complete');
 
       if (result.success) {
         this.context.stdout.write(colors.success('\n✓ All methodology packs installed!\n'));
@@ -195,15 +201,17 @@ export class MethodologyCommand extends Command {
   private async syncSkills(projectPath: string): Promise<number> {
     const manager = createMethodologyManager({ projectPath, autoSync: false });
 
-    this.context.stdout.write('Syncing methodology skills to detected agents...\n\n');
-
     if (this.dryRun) {
       const installed = manager.listInstalledSkills();
       this.context.stdout.write(colors.warning(`[dry-run] Would sync ${installed.length} skills.\n`));
       return 0;
     }
 
+    const s = spinner();
+    s.start('Syncing methodology skills');
+
     const result = await manager.syncAll();
+    s.stop('Sync complete');
 
     if (result.synced.length > 0) {
       this.context.stdout.write(colors.success('✓ Sync complete!\n'));

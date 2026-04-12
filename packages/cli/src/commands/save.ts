@@ -43,14 +43,26 @@ export class SaveCommand extends Command {
     description: 'Local file path to save as a skill',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const sources = [this.url, this.text, this.file].filter(Boolean);
     if (sources.length === 0) {
-      console.log(colors.error('Provide a URL, --text, or --file'));
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: 'Provide a URL, --text, or --file' }));
+      } else {
+        console.log(colors.error('Provide a URL, --text, or --file'));
+      }
       return 1;
     }
     if (sources.length > 1) {
-      console.log(colors.error('Provide only one of: URL, --text, or --file'));
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: 'Provide only one of: URL, --text, or --file' }));
+      } else {
+        console.log(colors.error('Provide only one of: URL, --text, or --file'));
+      }
       return 1;
     }
 
@@ -58,7 +70,7 @@ export class SaveCommand extends Command {
     const generator = new SkillGenerator();
     const tagger = new AutoTagger();
 
-    const s = spinner();
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
 
     try {
       s.start('Extracting content');
@@ -82,37 +94,45 @@ export class SaveCommand extends Command {
         global: this.global,
       });
 
-      s.stop(colors.success('Skill saved'));
+      s.stop('Skill saved');
 
-      console.log('');
-      console.log(colors.bold('  Name:  ') + colors.cyan(result.name));
-      console.log(colors.bold('  Path:  ') + colors.muted(result.skillPath));
-      if (tags.length > 0) {
-        console.log(colors.bold('  Tags:  ') + tags.map(t => colors.warning(t)).join(', '));
-      }
+      if (this.json) {
+        console.log(JSON.stringify({ success: true, name: result.name, path: result.skillPath }));
+      } else {
+        console.log('');
+        console.log(colors.bold('  Name:  ') + colors.cyan(result.name));
+        console.log(colors.bold('  Path:  ') + colors.muted(result.skillPath));
+        if (tags.length > 0) {
+          console.log(colors.bold('  Tags:  ') + tags.map(t => colors.warning(t)).join(', '));
+        }
 
-      if (this.agent) {
-        const agents = this.agent.split(',').map(a => a.trim()).filter(Boolean);
-        const skillDir = dirname(result.skillPath);
+        if (this.agent) {
+          const agents = this.agent.split(',').map(a => a.trim()).filter(Boolean);
+          const skillDir = dirname(result.skillPath);
 
-        for (const agentName of agents) {
-          try {
-            const adapter = getAdapter(agentName as AgentType);
-            const targetDir = join(adapter.skillsDir, result.name);
-            mkdirSync(targetDir, { recursive: true });
-            cpSync(skillDir, targetDir, { recursive: true });
-            console.log(colors.success(`  Installed to ${agentName}: `) + colors.muted(targetDir));
-          } catch (err) {
-            warn(`  Skipped ${agentName}: ${err instanceof Error ? err.message : String(err)}`);
+          for (const agentName of agents) {
+            try {
+              const adapter = getAdapter(agentName as AgentType);
+              const targetDir = join(adapter.skillsDir, result.name);
+              mkdirSync(targetDir, { recursive: true });
+              cpSync(skillDir, targetDir, { recursive: true });
+              console.log(colors.success(`  Installed to ${agentName}: `) + colors.muted(targetDir));
+            } catch (err) {
+              warn(`  Skipped ${agentName}: ${err instanceof Error ? err.message : String(err)}`);
+            }
           }
         }
-      }
 
-      console.log('');
+        console.log('');
+      }
       return 0;
     } catch (err) {
-      s.stop(colors.error('Failed'));
-      console.log(colors.error(err instanceof Error ? err.message : String(err)));
+      s.stop('Failed');
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: err instanceof Error ? err.message : String(err) }));
+      } else {
+        console.log(colors.error(err instanceof Error ? err.message : String(err)));
+      }
       return 1;
     }
   }

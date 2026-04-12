@@ -21,6 +21,10 @@ export class ReadCommand extends Command {
     description: 'Show additional information',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const searchDirs = getSearchDirs();
 
@@ -30,26 +34,35 @@ export class ReadCommand extends Command {
       .filter(s => s.length > 0);
 
     if (skillNames.length === 0) {
-      error('No skill names provided');
+      if (this.json) {
+        console.log(JSON.stringify({ error: 'No skill names provided' }));
+      } else {
+        error('No skill names provided');
+      }
       return 1;
     }
 
     let exitCode = 0;
+    const jsonResults: Array<{ name: string; content: string; path: string }> = [];
 
     for (const skillName of skillNames) {
       const skill = findSkill(skillName, searchDirs);
 
       if (!skill) {
-        error(`Skill not found: ${skillName}`);
-        console.log(colors.muted('Available directories:'));
-        searchDirs.forEach(d => console.log(colors.muted(`  - ${d}`)));
+        if (!this.json) {
+          error(`Skill not found: ${skillName}`);
+          console.log(colors.muted('Available directories:'));
+          searchDirs.forEach(d => console.log(colors.muted(`  - ${d}`)));
+        }
         exitCode = 1;
         continue;
       }
 
       if (!skill.enabled) {
-        warn(`Skill disabled: ${skillName}`);
-        console.log(colors.muted('Enable with: skillkit enable ' + skillName));
+        if (!this.json) {
+          warn(`Skill disabled: ${skillName}`);
+          console.log(colors.muted('Enable with: skillkit enable ' + skillName));
+        }
         exitCode = 1;
         continue;
       }
@@ -57,20 +70,32 @@ export class ReadCommand extends Command {
       const content = readSkillContent(skill.path);
 
       if (!content) {
-        error(`Could not read SKILL.md for: ${skillName}`);
+        if (!this.json) error(`Could not read SKILL.md for: ${skillName}`);
         exitCode = 1;
         continue;
       }
 
-      console.log(`Reading: ${skillName}`);
-      console.log(`Base directory: ${skill.path}`);
-      console.log();
-      console.log(content);
-      console.log();
-      console.log(`Skill read: ${skillName}`);
+      if (this.json) {
+        jsonResults.push({ name: skillName, content, path: skill.path });
+      } else {
+        console.log(`Reading: ${skillName}`);
+        console.log(`Base directory: ${skill.path}`);
+        console.log();
+        console.log(content);
+        console.log();
+        console.log(`Skill read: ${skillName}`);
 
-      if (skillNames.length > 1 && skillName !== skillNames[skillNames.length - 1]) {
-        console.log('\n---\n');
+        if (skillNames.length > 1 && skillName !== skillNames[skillNames.length - 1]) {
+          console.log('\n---\n');
+        }
+      }
+    }
+
+    if (this.json) {
+      if (jsonResults.length === 1) {
+        console.log(JSON.stringify(jsonResults[0]));
+      } else {
+        console.log(JSON.stringify(jsonResults));
       }
     }
 

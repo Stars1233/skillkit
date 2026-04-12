@@ -15,6 +15,7 @@ import {
   error,
   header,
   confirm,
+  spinner,
 } from '../onboarding/index.js';
 
 interface FixSuggestion {
@@ -209,6 +210,7 @@ export class FixCommand extends Command {
 
     let totalFixes = 0;
     let filesFixed = 0;
+    const s = spinner();
 
     for (const target of this.targets) {
       const resolved = resolve(target);
@@ -256,8 +258,10 @@ export class FixCommand extends Command {
         continue;
       }
 
+      s.start(`Evaluating ${skillName}`);
       const content = readFileSync(filePath, 'utf-8');
       const quality = evaluateSkillFile(filePath);
+      s.stop(`Evaluated ${skillName}`);
 
       if (!quality) {
         warn(`Could not evaluate: ${target}`);

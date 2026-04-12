@@ -89,6 +89,10 @@ export class TranslateCommand extends Command {
     description: 'Show compatibility info between agents',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     // List supported agents
     if (this.list) {
@@ -218,15 +222,21 @@ export class TranslateCommand extends Command {
     const skills = findAllSkills(searchDirs);
 
     if (skills.length === 0) {
-      warn('No skills found to translate');
+      if (this.json) {
+        console.log(JSON.stringify({ success: true, translated: 0, agent: targetAgent }));
+      } else {
+        warn('No skills found to translate');
+      }
       return 0;
     }
 
-    console.log(colors.bold(`\nTranslating ${skills.length} skill(s) to ${targetAgent}...\n`));
+    if (!this.json) {
+      console.log(colors.bold(`\nTranslating ${skills.length} skill(s) to ${targetAgent}...\n`));
+    }
 
     let successCount = 0;
     let failed = 0;
-    const s = spinner();
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
 
     for (const skill of skills) {
       const skillMdPath = join(skill.path, 'SKILL.md');
@@ -289,8 +299,12 @@ export class TranslateCommand extends Command {
       }
     }
 
-    console.log();
-    console.log(colors.bold(`Translated: ${successCount}, Failed: ${failed}`));
+    if (this.json) {
+      console.log(JSON.stringify({ success: failed === 0, translated: successCount, agent: targetAgent }));
+    } else {
+      console.log();
+      console.log(colors.bold(`Translated: ${successCount}, Failed: ${failed}`));
+    }
 
     return failed > 0 ? 1 : 0;
   }
@@ -336,8 +350,7 @@ export class TranslateCommand extends Command {
       }
     }
 
-    // Read and translate
-    const s = spinner();
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
     s.start(`Translating to ${targetAgent}...`);
 
     const content = readFileSync(sourcePath!, 'utf-8');
@@ -349,39 +362,45 @@ export class TranslateCommand extends Command {
     s.stop(`Translation complete`);
 
     if (!result.success) {
-      error('Translation failed:');
-      for (const item of result.incompatible) {
-        console.log(colors.muted(`  ${item}`));
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, translated: 0, agent: targetAgent }));
+      } else {
+        error('Translation failed:');
+        for (const item of result.incompatible) {
+          console.log(colors.muted(`  ${item}`));
+        }
       }
       return 1;
     }
 
-    // Show warnings
-    if (result.warnings.length > 0) {
-      warn('\nWarnings:');
-      for (const warning of result.warnings) {
-        console.log(colors.warning(`  • ${warning}`));
+    if (!this.json) {
+      if (result.warnings.length > 0) {
+        warn('\nWarnings:');
+        for (const warning of result.warnings) {
+          console.log(colors.warning(`  • ${warning}`));
+        }
+      }
+
+      if (result.incompatible.length > 0) {
+        console.log(colors.muted('\nIncompatible features:'));
+        for (const item of result.incompatible) {
+          console.log(colors.muted(`  • ${item}`));
+        }
       }
     }
 
-    // Show incompatible features
-    if (result.incompatible.length > 0) {
-      console.log(colors.muted('\nIncompatible features:'));
-      for (const item of result.incompatible) {
-        console.log(colors.muted(`  • ${item}`));
-      }
-    }
-
-    // Dry run - just show preview
     if (this.dryRun) {
-      console.log(colors.bold(`\nTranslated content (${result.filename}):\n`));
-      console.log(colors.muted('─'.repeat(60)));
-      console.log(result.content);
-      console.log(colors.muted('─'.repeat(60)));
+      if (this.json) {
+        console.log(JSON.stringify({ success: true, translated: 1, agent: targetAgent }));
+      } else {
+        console.log(colors.bold(`\nTranslated content (${result.filename}):\n`));
+        console.log(colors.muted('─'.repeat(60)));
+        console.log(result.content);
+        console.log(colors.muted('─'.repeat(60)));
+      }
       return 0;
     }
 
-    // Determine output path
     let outputPath: string;
     if (this.output) {
       outputPath = this.output;
@@ -396,14 +415,16 @@ export class TranslateCommand extends Command {
       outputPath = join(outputDir, result.filename);
     }
 
-    // Check for existing file
     if (existsSync(outputPath) && !this.force) {
-      error(`${outputPath} already exists`);
-      console.log(colors.muted('Use --force to overwrite'));
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: `${outputPath} already exists` }));
+      } else {
+        error(`${outputPath} already exists`);
+        console.log(colors.muted('Use --force to overwrite'));
+      }
       return 1;
     }
 
-    // Write output
     const outputDir = dirname(outputPath);
     if (!existsSync(outputDir)) {
       mkdirSync(outputDir, { recursive: true });
@@ -411,9 +432,13 @@ export class TranslateCommand extends Command {
 
     writeFileSync(outputPath, result.content, 'utf-8');
 
-    success(`\n✓ Translated to ${outputPath}`);
-    console.log(colors.muted(`  Format: ${result.targetFormat}`));
-    console.log(colors.muted(`  Agent: ${result.targetAgent}`));
+    if (this.json) {
+      console.log(JSON.stringify({ success: true, translated: 1, agent: targetAgent }));
+    } else {
+      success(`\n✓ Translated to ${outputPath}`);
+      console.log(colors.muted(`  Format: ${result.targetFormat}`));
+      console.log(colors.muted(`  Agent: ${result.targetAgent}`));
+    }
 
     return 0;
   }
