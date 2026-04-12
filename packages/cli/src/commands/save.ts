@@ -96,8 +96,29 @@ export class SaveCommand extends Command {
 
       s.stop('Skill saved');
 
+      const installedAgents: string[] = [];
+      if (this.agent) {
+        const agents = this.agent.split(',').map(a => a.trim()).filter(Boolean);
+        const skillDir = dirname(result.skillPath);
+
+        for (const agentName of agents) {
+          try {
+            const adapter = getAdapter(agentName as AgentType);
+            const targetDir = join(adapter.skillsDir, result.name);
+            mkdirSync(targetDir, { recursive: true });
+            cpSync(skillDir, targetDir, { recursive: true });
+            installedAgents.push(agentName);
+            if (!this.json) {
+              console.log(colors.success(`  Installed to ${agentName}: `) + colors.muted(targetDir));
+            }
+          } catch (err) {
+            if (!this.json) warn(`  Skipped ${agentName}: ${err instanceof Error ? err.message : String(err)}`);
+          }
+        }
+      }
+
       if (this.json) {
-        console.log(JSON.stringify({ success: true, name: result.name, path: result.skillPath }));
+        console.log(JSON.stringify({ success: true, name: result.name, path: result.skillPath, agents: installedAgents }));
       } else {
         console.log('');
         console.log(colors.bold('  Name:  ') + colors.cyan(result.name));
@@ -105,24 +126,6 @@ export class SaveCommand extends Command {
         if (tags.length > 0) {
           console.log(colors.bold('  Tags:  ') + tags.map(t => colors.warning(t)).join(', '));
         }
-
-        if (this.agent) {
-          const agents = this.agent.split(',').map(a => a.trim()).filter(Boolean);
-          const skillDir = dirname(result.skillPath);
-
-          for (const agentName of agents) {
-            try {
-              const adapter = getAdapter(agentName as AgentType);
-              const targetDir = join(adapter.skillsDir, result.name);
-              mkdirSync(targetDir, { recursive: true });
-              cpSync(skillDir, targetDir, { recursive: true });
-              console.log(colors.success(`  Installed to ${agentName}: `) + colors.muted(targetDir));
-            } catch (err) {
-              warn(`  Skipped ${agentName}: ${err instanceof Error ? err.message : String(err)}`);
-            }
-          }
-        }
-
         console.log('');
       }
       return 0;
