@@ -59,7 +59,14 @@ export class ListCommand extends Command {
       : skills.map(s => ({ ...s, quality: null as number | null }));
 
     if (this.json) {
-      console.log(JSON.stringify(skillsWithQuality, null, 2));
+      console.log(JSON.stringify({
+        skills: skillsWithQuality.map((s) => ({
+          name: s.name,
+          enabled: s.enabled,
+          path: s.path,
+        })),
+        total: skillsWithQuality.length,
+      }));
       return 0;
     }
 

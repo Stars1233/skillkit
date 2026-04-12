@@ -2,7 +2,7 @@ import { Command, Option } from 'clipanion';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { SkillScanner, formatResult, Severity } from '@skillkit/core';
-import { error } from '../onboarding/index.js';
+import { error, spinner } from '../onboarding/index.js';
 
 const SEVERITY_MAP: Record<string, Severity> = {
   critical: Severity.CRITICAL,
@@ -47,6 +47,10 @@ export class ScanCommand extends Command {
     description: 'Comma-separated rule IDs or categories to skip',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const targetPath = resolve(this.skillPath);
 
@@ -77,7 +81,21 @@ export class ScanCommand extends Command {
       skipRules,
     });
 
-    const result = await scanner.scan(targetPath);
+    const s = this.json ? { start: () => {}, stop: () => {} } : spinner();
+    s.start('Scanning for vulnerabilities...');
+    let result;
+    try {
+      result = await scanner.scan(targetPath);
+      s.stop(`Scan complete (${result.findings.length} finding(s))`);
+    } catch (err) {
+      s.stop('Scan failed');
+      throw err;
+    }
+
+    if (this.json) {
+      this.context.stdout.write(formatResult(result, 'json') + '\n');
+      return result.verdict === 'fail' ? 1 : 0;
+    }
 
     this.context.stdout.write(formatResult(result, this.format) + '\n');
 

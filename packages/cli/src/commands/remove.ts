@@ -33,6 +33,10 @@ export class RemoveCommand extends Command {
     description: 'Skip confirmation',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const searchDirs = getSearchDirs();
 
@@ -51,22 +55,30 @@ export class RemoveCommand extends Command {
           return meta?.source?.includes(this.source!) ?? false;
         }).map((s) => ({ name: s.name, path: s.path }));
         if (skillsToRemove.length === 0) {
-          warn(`No skills found from source: ${this.source}`);
+          if (this.json) {
+            console.log(JSON.stringify({ success: true, removed: [], failed: [], total: 0 }));
+          } else {
+            warn(`No skills found from source: ${this.source}`);
+          }
           return 0;
         }
       } else {
         skillsToRemove = allSkills.map((s) => ({ name: s.name, path: s.path }));
         if (skillsToRemove.length === 0) {
-          warn('No installed skills found');
+          if (this.json) {
+            console.log(JSON.stringify({ success: true, removed: [], failed: [], total: 0 }));
+          } else {
+            warn('No installed skills found');
+          }
           return 0;
         }
       }
-      console.log(colors.muted(`Found ${skillsToRemove.length} skill(s) to remove`));
+      if (!this.json) console.log(colors.muted(`Found ${skillsToRemove.length} skill(s) to remove`));
     } else {
       for (const skillName of this.skills) {
         const skill = findSkill(skillName, searchDirs);
         if (!skill) {
-          warn(`Skill not found: ${skillName}`);
+          if (!this.json) warn(`Skill not found: ${skillName}`);
           continue;
         }
         skillsToRemove.push({ name: skill.name, path: skill.path });
@@ -75,6 +87,8 @@ export class RemoveCommand extends Command {
 
     let removed = 0;
     let failed = 0;
+    const removedNames: string[] = [];
+    const failedNames: string[] = [];
 
     for (const { name: skillName, path: skillPath } of skillsToRemove) {
       if (!existsSync(skillPath)) {
@@ -89,11 +103,15 @@ export class RemoveCommand extends Command {
           if (existsSync(metaSibling)) rmSync(metaSibling);
         }
         removeSkillFromLock(skillName);
-        success(`Removed: ${skillName}`);
+        removedNames.push(skillName);
+        if (!this.json) success(`Removed: ${skillName}`);
         removed++;
       } catch (err) {
-        error(`Failed to remove: ${skillName}`);
-        console.error(colors.muted(err instanceof Error ? err.message : String(err)));
+        failedNames.push(skillName);
+        if (!this.json) {
+          error(`Failed to remove: ${skillName}`);
+          console.error(colors.muted(err instanceof Error ? err.message : String(err)));
+        }
         failed++;
       }
     }
@@ -115,7 +133,19 @@ export class RemoveCommand extends Command {
         warn('Warning: Failed to update AGENTS.md');
         console.error(colors.muted(err instanceof Error ? err.message : String(err)));
       }
-      console.log(colors.muted('\nRun `skillkit sync` to update your agent config'));
+      if (!this.json) {
+        console.log(colors.muted('\nRun `skillkit sync` to update your agent config'));
+      }
+    }
+
+    if (this.json) {
+      console.log(JSON.stringify({
+        success: failed === 0,
+        removed: removedNames,
+        failed: failedNames,
+        total: removed + failed,
+      }));
+      return failed > 0 ? 1 : 0;
     }
 
     return failed > 0 ? 1 : 0;

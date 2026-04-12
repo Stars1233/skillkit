@@ -1,0 +1,65 @@
+name: 'SkillKit'
+description: 'Install, scan, and manage AI agent skills in CI/CD'
+inputs:
+  command:
+    description: 'SkillKit command to run (install, scan, check, sync)'
+    required: true
+  source:
+    description: 'Skill source for install (e.g. owner/repo)'
+    required: false
+  args:
+    description: 'Additional arguments'
+    required: false
+    default: ''
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '20'
+  agent:
+    description: 'Target agent (e.g. claude-code, cursor)'
+    required: false
+    default: 'claude-code'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install SkillKit
+      shell: bash
+      run: npm install -g skillkit@latest
+
+    - name: Run SkillKit
+      shell: bash
+      env:
+        SK_COMMAND: ${{ inputs.command }}
+        SK_SOURCE: ${{ inputs.source }}
+        SK_AGENT: ${{ inputs.agent }}
+        SK_ARGS: ${{ inputs.args }}
+      run: |
+        case "${SK_COMMAND}" in
+          install)
+            if [ -n "${SK_SOURCE}" ]; then
+              skillkit install "${SK_SOURCE}" --agent "${SK_AGENT}" --yes --json ${SK_ARGS}
+            else
+              echo "Error: source is required for install" >&2; exit 1
+            fi
+            ;;
+          scan)
+            if [ -n "${SK_SOURCE}" ]; then
+              skillkit scan "${SK_SOURCE}" --json ${SK_ARGS}
+            else
+              echo "Error: source is required for scan" >&2; exit 1
+            fi
+            ;;
+          check|sync|list|update)
+            skillkit "${SK_COMMAND}" ${SK_ARGS}
+            ;;
+          *)
+            echo "Error: unsupported command '${SK_COMMAND}'. Use: install, scan, check, sync, list, update" >&2
+            exit 1
+            ;;
+        esac

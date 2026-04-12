@@ -65,11 +65,15 @@ export class FindCommand extends Command {
     hidden: true,
   });
 
+  json = Option.Boolean("--json", false, {
+    description: "Output as JSON",
+  });
+
   async execute(): Promise<number> {
-    const s = spinner();
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
     const limit = parseInt(this.limit, 10) || 10;
 
-    if (!this.quiet) {
+    if (!this.quiet && !this.json) {
       header("Find Skills");
     }
 
@@ -117,7 +121,7 @@ export class FindCommand extends Command {
         )
         .slice(0, limit);
 
-      if (!this.quiet) {
+      if (!this.quiet && !this.json) {
         step("Showing featured skills");
       }
     } else if (this.query) {
@@ -138,7 +142,7 @@ export class FindCommand extends Command {
 
       s.stop(`Found ${results.length} skill(s)`);
     } else {
-      if (!this.quiet) {
+      if (!this.quiet && !this.json) {
         step("Enter a search term or browse featured skills");
       }
 
@@ -250,6 +254,18 @@ export class FindCommand extends Command {
       } catch {
         s.stop(colors.warning("External search unavailable"));
       }
+    }
+
+    if (this.json) {
+      console.log(JSON.stringify({
+        results: results.map((r) => ({
+          name: r.name,
+          description: r.description || "",
+          source: r.source,
+        })),
+        total: results.length,
+      }));
+      return 0;
     }
 
     if (results.length === 0) {

@@ -133,14 +133,18 @@ export class InstallCommand extends Command {
     description: "Run security scan before installing (default: true)",
   });
 
+  json = Option.Boolean("--json", false, {
+    description: "Output as JSON",
+  });
+
   async execute(): Promise<number> {
     const isInteractive =
-      process.stdin.isTTY && !this.skills && !this.all && !this.yes;
-    const s = spinner();
+      process.stdin.isTTY && !this.skills && !this.all && !this.yes && !this.json;
+    const s = this.json ? { start: () => {}, stop: () => {}, message: () => {} } : spinner();
     let cloneResult: Awaited<ReturnType<typeof this.resolveSource>>["cloneResult"] = null;
 
     try {
-      if (process.stdin.isTTY && !this.quiet) {
+      if (process.stdin.isTTY && !this.quiet && !this.json) {
         welcome();
       }
 
@@ -182,8 +186,12 @@ export class InstallCommand extends Command {
 
       return 0;
     } catch (err) {
-      s.stop(colors.error("Installation failed"));
-      console.log(colors.muted(err instanceof Error ? err.message : String(err)));
+      if (this.json) {
+        console.log(JSON.stringify({ success: false, error: err instanceof Error ? err.message : String(err) }));
+      } else {
+        s.stop(colors.error("Installation failed"));
+        console.log(colors.muted(err instanceof Error ? err.message : String(err)));
+      }
       return 1;
     } finally {
       if (cloneResult) this.cleanupTemp(cloneResult);
@@ -657,6 +665,16 @@ export class InstallCommand extends Command {
     providerAdapter: ReturnType<typeof detectProvider>,
     isInteractive: boolean,
   ): Promise<void> {
+    if (this.json) {
+      console.log(JSON.stringify({
+        success: true,
+        installed: installResults.map((r) => r.skillName),
+        agents: targetAgents,
+        total: installResults.length,
+      }));
+      return;
+    }
+
     if (installResults.length > 0) {
       if (isInteractive) {
         showInstallSummary({
