@@ -23,6 +23,10 @@ export class UpdateCommand extends Command {
     description: 'Force update even if local changes exist',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const s = spinner();
     const searchDirs = getSearchDirs();
@@ -175,6 +179,11 @@ export class UpdateCommand extends Command {
         console.log(colors.muted(err instanceof Error ? err.message : String(err)));
         failed++;
       }
+    }
+
+    if (this.json) {
+      console.log(JSON.stringify({ updated, skipped, failed }));
+      return failed > 0 ? 1 : 0;
     }
 
     console.log();

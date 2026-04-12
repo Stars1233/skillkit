@@ -33,6 +33,10 @@ export class RemoveCommand extends Command {
     description: 'Skip confirmation',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const searchDirs = getSearchDirs();
 
@@ -75,6 +79,8 @@ export class RemoveCommand extends Command {
 
     let removed = 0;
     let failed = 0;
+    const removedNames: string[] = [];
+    const failedNames: string[] = [];
 
     for (const { name: skillName, path: skillPath } of skillsToRemove) {
       if (!existsSync(skillPath)) {
@@ -89,13 +95,27 @@ export class RemoveCommand extends Command {
           if (existsSync(metaSibling)) rmSync(metaSibling);
         }
         removeSkillFromLock(skillName);
-        success(`Removed: ${skillName}`);
+        removedNames.push(skillName);
+        if (!this.json) success(`Removed: ${skillName}`);
         removed++;
       } catch (err) {
-        error(`Failed to remove: ${skillName}`);
-        console.error(colors.muted(err instanceof Error ? err.message : String(err)));
+        failedNames.push(skillName);
+        if (!this.json) {
+          error(`Failed to remove: ${skillName}`);
+          console.error(colors.muted(err instanceof Error ? err.message : String(err)));
+        }
         failed++;
       }
+    }
+
+    if (this.json) {
+      console.log(JSON.stringify({
+        success: failed === 0,
+        removed: removedNames,
+        failed: failedNames,
+        total: removed + failed,
+      }));
+      return failed > 0 ? 1 : 0;
     }
 
     if (removed > 0) {

@@ -52,11 +52,15 @@ export class CheckCommand extends Command {
     description: 'Minimal output',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const searchDirs = getSearchDirs();
     const s = spinner();
 
-    if (!this.quiet) {
+    if (!this.quiet && !this.json) {
       header('Check Updates');
     }
 
@@ -85,7 +89,7 @@ export class CheckCommand extends Command {
       return 0;
     }
 
-    if (!this.quiet) {
+    if (!this.quiet && !this.json) {
       step(`Checking ${skillsToCheck.length} skill(s) for updates...`);
       console.log('');
     }
@@ -193,6 +197,19 @@ export class CheckCommand extends Command {
         });
         if (this.verbose) s.stop(`${skill.name}: error`);
       }
+    }
+
+    if (this.json) {
+      console.log(JSON.stringify({
+        skills: results.map((r) => ({
+          name: r.name,
+          hasUpdate: r.hasUpdate,
+          quality: r.qualityScore ?? null,
+          stars: r.stars ?? null,
+        })),
+        updatesAvailable,
+      }));
+      return 0;
     }
 
     console.log('');

@@ -65,11 +65,15 @@ export class FindCommand extends Command {
     hidden: true,
   });
 
+  json = Option.Boolean("--json", false, {
+    description: "Output as JSON",
+  });
+
   async execute(): Promise<number> {
     const s = spinner();
     const limit = parseInt(this.limit, 10) || 10;
 
-    if (!this.quiet) {
+    if (!this.quiet && !this.json) {
       header("Find Skills");
     }
 
@@ -250,6 +254,18 @@ export class FindCommand extends Command {
       } catch {
         s.stop(colors.warning("External search unavailable"));
       }
+    }
+
+    if (this.json) {
+      console.log(JSON.stringify({
+        results: results.map((r) => ({
+          name: r.name,
+          description: r.description || "",
+          source: r.source,
+        })),
+        total: results.length,
+      }));
+      return 0;
     }
 
     if (results.length === 0) {

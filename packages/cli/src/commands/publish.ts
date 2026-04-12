@@ -453,6 +453,10 @@ export class PublishSubmitCommand extends Command {
     description: "Show what would be submitted",
   });
 
+  json = Option.Boolean("--json", false, {
+    description: "Output as JSON",
+  });
+
   async execute(): Promise<number> {
     const skillPath = this.skillPath || process.cwd();
     const skillMdPath = this.findSkillMd(skillPath);
@@ -465,7 +469,7 @@ export class PublishSubmitCommand extends Command {
       return 1;
     }
 
-    step("Submitting skill to SkillKit marketplace...\n");
+    if (!this.json) step("Submitting skill to SkillKit marketplace...\n");
 
     const content = readFileSync(skillMdPath, "utf-8");
     const frontmatter = this.parseFrontmatter(content);
@@ -508,26 +512,28 @@ export class PublishSubmitCommand extends Command {
       tags: frontmatter.tags || ["general"],
     };
 
-    console.log(colors.primary("Skill details:"));
-    console.log(colors.muted(`  ID: ${skillEntry.id}`));
-    console.log(colors.muted(`  Name: ${skillEntry.name}`));
-    console.log(colors.muted(`  Description: ${skillEntry.description}`));
-    console.log(colors.muted(`  Source: ${skillEntry.source}`));
-    console.log(colors.muted(`  Tags: ${skillEntry.tags.join(", ")}`));
-    console.log(colors.muted(`  Quality: ${qualityBadge}${qualityScore !== null ? ` (${qualityScore}/100)` : ""}`));
-    if (activity) {
-      const stars = formatCount(activity.stars);
-      const pushed = activity.pushedAt ? timeAgo(activity.pushedAt) : "unknown";
-      console.log(colors.muted(`  Stars: ${stars}`));
-      console.log(colors.muted(`  Last push: ${pushed}`));
-    }
-    if (quality && quality.warnings.length > 0) {
-      console.log(colors.warning(`  Warnings:`));
-      for (const w of quality.warnings.slice(0, 3)) {
-        console.log(colors.muted(`    - ${w}`));
+    if (!this.json) {
+      console.log(colors.primary("Skill details:"));
+      console.log(colors.muted(`  ID: ${skillEntry.id}`));
+      console.log(colors.muted(`  Name: ${skillEntry.name}`));
+      console.log(colors.muted(`  Description: ${skillEntry.description}`));
+      console.log(colors.muted(`  Source: ${skillEntry.source}`));
+      console.log(colors.muted(`  Tags: ${skillEntry.tags.join(", ")}`));
+      console.log(colors.muted(`  Quality: ${qualityBadge}${qualityScore !== null ? ` (${qualityScore}/100)` : ""}`));
+      if (activity) {
+        const stars = formatCount(activity.stars);
+        const pushed = activity.pushedAt ? timeAgo(activity.pushedAt) : "unknown";
+        console.log(colors.muted(`  Stars: ${stars}`));
+        console.log(colors.muted(`  Last push: ${pushed}`));
       }
+      if (quality && quality.warnings.length > 0) {
+        console.log(colors.warning(`  Warnings:`));
+        for (const w of quality.warnings.slice(0, 3)) {
+          console.log(colors.muted(`    - ${w}`));
+        }
+      }
+      console.log();
     }
-    console.log();
 
     if (this.dryRun) {
       warn("Dry run - not submitting");
@@ -566,6 +572,15 @@ export class PublishSubmitCommand extends Command {
         },
       ).trim();
 
+      if (this.json) {
+        console.log(JSON.stringify({
+          success: true,
+          source: `${repoInfo.owner}/${repoInfo.repo}`,
+          quality: qualityScore,
+          issueUrl: result || "",
+        }));
+        return 0;
+      }
       success("Submission created!");
       if (result) {
         console.log(colors.muted(`  ${result}`));

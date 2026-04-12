@@ -47,6 +47,10 @@ export class ScanCommand extends Command {
     description: 'Comma-separated rule IDs or categories to skip',
   });
 
+  json = Option.Boolean('--json', false, {
+    description: 'Output as JSON',
+  });
+
   async execute(): Promise<number> {
     const targetPath = resolve(this.skillPath);
 
@@ -78,6 +82,11 @@ export class ScanCommand extends Command {
     });
 
     const result = await scanner.scan(targetPath);
+
+    if (this.json) {
+      this.context.stdout.write(formatResult(result, 'json') + '\n');
+      return result.verdict === 'fail' ? 1 : 0;
+    }
 
     this.context.stdout.write(formatResult(result, this.format) + '\n');
 

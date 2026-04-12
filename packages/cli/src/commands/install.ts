@@ -133,14 +133,18 @@ export class InstallCommand extends Command {
     description: "Run security scan before installing (default: true)",
   });
 
+  json = Option.Boolean("--json", false, {
+    description: "Output as JSON",
+  });
+
   async execute(): Promise<number> {
     const isInteractive =
-      process.stdin.isTTY && !this.skills && !this.all && !this.yes;
+      process.stdin.isTTY && !this.skills && !this.all && !this.yes && !this.json;
     const s = spinner();
     let cloneResult: Awaited<ReturnType<typeof this.resolveSource>>["cloneResult"] = null;
 
     try {
-      if (process.stdin.isTTY && !this.quiet) {
+      if (process.stdin.isTTY && !this.quiet && !this.json) {
         welcome();
       }
 
@@ -657,6 +661,16 @@ export class InstallCommand extends Command {
     providerAdapter: ReturnType<typeof detectProvider>,
     isInteractive: boolean,
   ): Promise<void> {
+    if (this.json) {
+      console.log(JSON.stringify({
+        success: true,
+        installed: installResults.map((r) => r.skillName),
+        agents: targetAgents,
+        total: installResults.length,
+      }));
+      return;
+    }
+
     if (installResults.length > 0) {
       if (isInteractive) {
         showInstallSummary({
