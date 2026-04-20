@@ -474,6 +474,16 @@ export const AGENT_CONFIG: Record<AgentType, AgentDirectoryConfig> = {
     usesFrontmatter: true,
     supportsAutoDiscovery: true,
   },
+
+  // Hermes Agent
+  hermes: {
+    skillsDir: '.hermes/skills',
+    configFile: 'AGENTS.md',
+    globalSkillsDir: '~/.hermes/skills',
+    configFormat: 'xml',
+    usesFrontmatter: true,
+    supportsAutoDiscovery: true,
+  },
 };
 
 /**

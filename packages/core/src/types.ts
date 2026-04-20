@@ -46,6 +46,7 @@ export const AgentType = z.enum([
   "tabnine",
   "codegpt",
   "playcode-agent",
+  "hermes",
 ]);
 export type AgentType = z.infer<typeof AgentType>;
 
