@@ -80,7 +80,6 @@ ${skillsXml}
     const hermesMd = join(process.cwd(), 'AGENTS.md');
     
     // Check for hermes binary in path if possible
-    let hasBinary = false;
     try {
       // In a real browser/tool environment we might use which/whereis
       // but for detection logic we rely on filesystem markers primarily.
