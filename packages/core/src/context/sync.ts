@@ -283,6 +283,7 @@ export class ContextSync {
     const commonDirs = [
       '.claude/skills',
       '.cursor/skills',
+      '.hermes/skills',
       '.agent/skills',
       'skills',
     ];
