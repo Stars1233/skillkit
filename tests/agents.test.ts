@@ -140,13 +140,22 @@ describe('agents', () => {
       expect(adapter.type).toBe('windsurf');
       expect(adapter.name).toBe('Windsurf');
       expect(adapter.skillsDir).toBe('.windsurf/skills');
+      expect(adapter.configFile).toBe('.windsurfrules');
+    });
+
+    it('should return adapter for hermes', () => {
+      const adapter = getAdapter('hermes');
+      expect(adapter.type).toBe('hermes');
+      expect(adapter.name).toBe('Hermes Agent');
+      expect(adapter.skillsDir).toBe('.hermes/skills');
+      expect(adapter.configFile).toBe('AGENTS.md');
     });
   });
 
   describe('getAllAdapters', () => {
-    it('should return all 17 adapters', () => {
+    it('should return all 18 adapters', () => {
       const adapters = getAllAdapters();
-      expect(adapters.length).toBe(17);
+      expect(adapters.length).toBe(18);
       expect(adapters.map(a => a.type)).toContain('claude-code');
       expect(adapters.map(a => a.type)).toContain('cursor');
       expect(adapters.map(a => a.type)).toContain('universal');
