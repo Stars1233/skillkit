@@ -357,6 +357,7 @@ export class InstallCommand extends Command {
     if (isInteractive) {
       const allAgentTypes = getAllAdapters().map((a) => a.type);
       const lastAgents = getLastAgents();
+      const detectedAgent = await detectAgent().catch(() => undefined);
 
       step(`Detected ${allAgentTypes.length} agents`);
 
@@ -364,6 +365,7 @@ export class InstallCommand extends Command {
         message: "Install to",
         agents: allAgentTypes,
         lastSelected: lastAgents,
+        detected: detectedAgent,
       });
 
       if (isCancel(agentResult)) {
@@ -372,6 +374,10 @@ export class InstallCommand extends Command {
       }
 
       const targetAgents = (agentResult as { agents: string[] }).agents as AgentType[];
+      if (targetAgents.length === 0) {
+        cancel("Installation cancelled");
+        return { agents: null, exitCode: 0 };
+      }
       saveLastAgents(targetAgents);
       return { agents: targetAgents, exitCode: 0 };
     }
