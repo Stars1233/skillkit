@@ -357,7 +357,8 @@ export class InstallCommand extends Command {
     if (isInteractive) {
       const allAgentTypes = getAllAdapters().map((a) => a.type);
       const lastAgents = getLastAgents();
-      const detectedAgent = await detectAgent().catch(() => undefined);
+      const rawDetected = await detectAgent().catch(() => undefined);
+      const detectedAgent = rawDetected && rawDetected !== 'universal' ? rawDetected : undefined;
 
       step(`Detected ${allAgentTypes.length} agents`);
 

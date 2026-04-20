@@ -153,8 +153,8 @@ export async function quickAgentSelect(options: {
 
   selectOptions.push({
     value: 'all',
-    label: 'All detected agents',
-    hint: `${agents.length} agent${agents.length !== 1 ? 's' : ''} — use only if you know`,
+    label: 'All supported agents',
+    hint: `${agents.length} agent${agents.length !== 1 ? 's' : ''} — writes to every adapter`,
   });
 
   const result = await clack.select({
