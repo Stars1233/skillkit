@@ -375,6 +375,67 @@ bun add -g skillkit           # bun
 npx skillkit <command>        # no install
 ```
 
+### Install sizes
+
+Core commands — `install`, `list`, `find`, `translate`, `recommend`, `publish` —
+ship in the default package. Four power features are shipped as **optional
+dependencies** so a bare CLI install stays small:
+
+| Feature                  | Package              | Command                     |
+| ------------------------ | -------------------- | --------------------------- |
+| Interactive terminal UI  | `@skillkit/tui`      | `skillkit ui` / `skillkit tui` |
+| REST/OpenAPI server      | `@skillkit/api`      | `skillkit serve`            |
+| Peer mesh networking     | `@skillkit/mesh`     | `skillkit mesh …`           |
+| Inter-agent messaging    | `@skillkit/messaging`| `skillkit message …`        |
+
+```bash
+# Full install — every feature, everything works out of the box (default):
+npm install -g skillkit
+
+# Slim install — core commands only, ~75% smaller, no native addons:
+npm install -g skillkit --omit=optional
+pnpm add -g skillkit --prod --no-optional
+```
+
+Cold `npm install` measurements on a fresh cache:
+
+| Install mode          | Packages | Time | Deprecations |
+| --------------------- | -------- | ---- | ------------ |
+| `skillkit`            | 475      | 18 s | 3            |
+| `skillkit --omit=optional` | 118 | 9 s  | 0            |
+
+If you skipped optional deps and later want the UI, server, mesh, or
+messaging, add just the one you need:
+
+```bash
+npm install -g @skillkit/tui         # skillkit ui
+npm install -g @skillkit/api         # skillkit serve
+npm install -g @skillkit/mesh        # skillkit mesh
+npm install -g @skillkit/messaging   # skillkit message
+```
+
+### Using `npx` (no install)
+
+`npx skillkit add <owner/repo>` is the fastest way to try it. First run
+downloads the package into the npx cache (`~/.npm/_npx/`); every run
+after that is instant.
+
+```bash
+# Full (defaults to installing optional features):
+npx skillkit add anthropics/skills
+
+# Slim — core commands only, ~75% fewer packages, 0 warnings:
+npx --omit=optional skillkit add anthropics/skills
+```
+
+Run `npx skillkit` a few times and you will want the global install —
+it skips the prompt-to-proceed and kills the per-release cache refetch:
+
+```bash
+npm install -g skillkit --omit=optional   # 9 s, 118 packages, one time
+skillkit add anthropics/skills            # instant every run
+```
+
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).
