@@ -9,7 +9,7 @@ export class WindsurfAdapter implements AgentAdapter {
   readonly type: AgentType = 'windsurf';
   readonly name = 'Windsurf';
   readonly skillsDir = '.windsurf/skills';
-  readonly configFile = '.windsurfrules';
+  readonly configFile = '.windsurf/rules/skills.md';
   readonly globalSkillsDir = join(homedir(), '.codeium', 'windsurf', 'skills');
 
   generateConfig(skills: Skill[]): string {
