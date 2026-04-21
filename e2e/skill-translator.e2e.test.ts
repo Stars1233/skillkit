@@ -28,7 +28,7 @@ import {
   type CrossAgentSkill,
 } from '@skillkit/core';
 
-// All 45 supported agents
+// All 46 supported agents
 const SUPPORTED_AGENTS = [
   'claude-code',
   'cursor',
@@ -74,6 +74,7 @@ const SUPPORTED_AGENTS = [
   'tabnine',
   'codegpt',
   'playcode-agent',
+  'hermes',
 ] as const;
 
 describe('E2E: Skill Translator - Parsing', () => {
