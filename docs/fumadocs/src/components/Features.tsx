@@ -83,7 +83,7 @@ export function Features(): React.ReactElement {
             </p>
             <div className="flex gap-6 sm:gap-8">
               <div>
-                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">45</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white font-mono">46</div>
                 <div className="text-zinc-600 text-[10px] sm:text-xs font-mono">Agents</div>
               </div>
               <div>

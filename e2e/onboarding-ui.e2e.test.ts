@@ -93,6 +93,7 @@ describe('E2E: Onboarding UI', () => {
         'Tabnine',
         'CodeGPT',
         'PlayCode',
+        'Hermes',
       ];
 
       for (const agent of agents) {

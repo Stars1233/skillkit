@@ -360,6 +360,7 @@ Follow these guidelines`;
         'tabnine',
         'codegpt',
         'playcode-agent',
+        'hermes',
       ] as const;
 
       const skill: CanonicalSkill = {
