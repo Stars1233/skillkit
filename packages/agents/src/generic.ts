@@ -33,6 +33,7 @@ const AGENT_DISPLAY_NAMES: Partial<Record<AgentType, string>> = {
   'tabnine': 'Tabnine',
   'codegpt': 'CodeGPT',
   'playcode-agent': 'PlayCode Agent',
+  'hermes': 'Hermes',
 };
 
 export class GenericAgentAdapter implements AgentAdapter {

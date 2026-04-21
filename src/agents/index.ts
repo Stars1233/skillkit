@@ -17,6 +17,7 @@ import { RooAdapter } from './roo.js';
 import { TraeAdapter } from './trae.js';
 import { WindsurfAdapter } from './windsurf.js';
 import { UniversalAdapter } from './universal.js';
+import { HermesAdapter } from './hermes.js';
 
 export * from './base.js';
 export * from './claude-code.js';
@@ -55,6 +56,7 @@ const adapters: Record<AgentType, AgentAdapter> = {
   trae: new TraeAdapter(),
   windsurf: new WindsurfAdapter(),
   universal: new UniversalAdapter(),
+  hermes: new HermesAdapter(),
 };
 
 export function getAdapter(type: AgentType): AgentAdapter {
@@ -83,6 +85,7 @@ export async function detectAgent(): Promise<AgentType> {
     'roo',
     'trae',
     'windsurf',
+    'hermes',
     'universal',
   ];
 

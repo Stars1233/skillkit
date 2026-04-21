@@ -18,6 +18,7 @@ export const AgentType = z.enum([
   'trae',
   'windsurf',
   'universal',
+  'hermes',
 ]);
 export type AgentType = z.infer<typeof AgentType>;
 

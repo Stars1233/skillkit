@@ -332,6 +332,13 @@ const AGENT_FORMATS: Record<AgentType, AgentCommandFormat> = {
     supportsSlashCommands: false,
     supportsCommandFiles: true,
   },
+  hermes: {
+    agent: 'hermes',
+    extension: '.md',
+    directory: '.hermes/commands',
+    supportsSlashCommands: true,
+    supportsCommandFiles: true,
+  },
 };
 
 /**
@@ -593,6 +600,7 @@ export class CommandGenerator {
       case 'amp':
       case 'roo':
       case 'kiro-cli':
+      case 'hermes':
         return this.generateClaudeCommands(commands);
 
       case 'cursor':

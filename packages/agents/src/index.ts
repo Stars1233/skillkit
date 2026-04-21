@@ -19,6 +19,7 @@ import { RooAdapter } from './roo.js';
 import { TraeAdapter } from './trae.js';
 import { WindsurfAdapter } from './windsurf.js';
 import { UniversalAdapter } from './universal.js';
+import { HermesAdapter } from './hermes.js';
 import { GenericAgentAdapter } from './generic.js';
 
 export * from './base.js';
@@ -41,6 +42,7 @@ export * from './roo.js';
 export * from './trae.js';
 export * from './windsurf.js';
 export * from './universal.js';
+export * from './hermes.js';
 export * from './generic.js';
 
 // Agent features
@@ -92,6 +94,7 @@ const adapters: Record<AgentType, AgentAdapter> = {
   tabnine: new GenericAgentAdapter('tabnine'),
   codegpt: new GenericAgentAdapter('codegpt'),
   'playcode-agent': new GenericAgentAdapter('playcode-agent'),
+  hermes: new HermesAdapter(),
 };
 
 export function getAdapter(type: AgentType): AgentAdapter {
@@ -160,6 +163,7 @@ export async function detectAgent(): Promise<AgentType> {
     'tabnine',
     'codegpt',
     'playcode-agent',
+    'hermes',
     'universal',
   ];
 

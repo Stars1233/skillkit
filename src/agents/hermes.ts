@@ -5,12 +5,14 @@ import type { AgentAdapter } from './base.js';
 import { createSkillXml } from './base.js';
 import type { Skill, AgentType } from '../core/types.js';
 
-export class WindsurfAdapter implements AgentAdapter {
-  readonly type: AgentType = 'windsurf';
-  readonly name = 'Windsurf';
-  readonly skillsDir = '.windsurf/skills';
-  readonly configFile = '.windsurf/rules/skills.md';
-  readonly globalSkillsDir = join(homedir(), '.codeium', 'windsurf', 'skills');
+/**
+ * Hermes Agent Adapter (Legacy)
+ */
+export class HermesAdapter implements AgentAdapter {
+  readonly type: AgentType = 'hermes';
+  readonly name = 'Hermes Agent';
+  readonly skillsDir = '.hermes/skills';
+  readonly configFile = 'AGENTS.md';
 
   generateConfig(skills: Skill[]): string {
     const enabledSkills = skills.filter(s => s.enabled);
@@ -51,11 +53,21 @@ ${skillsXml}
   }
 
   parseConfig(content: string): string[] {
+    const startMarker = '<!-- SKILLS_TABLE_START -->';
+    const endMarker = '<!-- SKILLS_TABLE_END -->';
+    const startIndex = content.indexOf(startMarker);
+    const endIndex = content.indexOf(endMarker);
+
+    if (startIndex === -1 || endIndex === -1) {
+      return [];
+    }
+
+    const scopedContent = content.substring(startIndex + startMarker.length, endIndex);
     const skillNames: string[] = [];
     const skillRegex = /<name>([^<]+)<\/name>/g;
     let match;
 
-    while ((match = skillRegex.exec(content)) !== null) {
+    while ((match = skillRegex.exec(scopedContent)) !== null) {
       skillNames.push(match[1].trim());
     }
 
@@ -67,9 +79,9 @@ ${skillsXml}
   }
 
   async isDetected(): Promise<boolean> {
-    const projectWindsurf = join(process.cwd(), '.windsurf');
-    const globalWindsurf = join(homedir(), '.codeium', 'windsurf');
+    const projectHermes = join(process.cwd(), '.hermes');
+    const globalHermes = join(homedir(), '.hermes');
 
-    return existsSync(projectWindsurf) || existsSync(globalWindsurf);
+    return existsSync(projectHermes) || existsSync(globalHermes);
   }
 }

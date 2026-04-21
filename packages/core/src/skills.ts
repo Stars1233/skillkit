@@ -34,6 +34,7 @@ export const SKILL_DISCOVERY_PATHS = [
   '.gemini/skills',
   '.github/skills',
   '.goose/skills',
+  '.hermes/skills',
   '.kilocode/skills',
   '.kiro/skills',
   '.lovable/skills',

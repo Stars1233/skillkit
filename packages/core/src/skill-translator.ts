@@ -405,7 +405,7 @@ export function translateSkillToAll(
     'mcpjam', 'mux', 'neovate', 'openhands', 'pi', 'qoder', 'qwen',
     'vercel', 'zencoder', 'devin', 'aider', 'sourcegraph-cody', 'amazon-q',
     'augment-code', 'replit-agent', 'bolt', 'lovable', 'tabby', 'tabnine',
-    'codegpt', 'playcode-agent',
+    'codegpt', 'playcode-agent', 'hermes',
   ];
 
   for (const agent of agents) {

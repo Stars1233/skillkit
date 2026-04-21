@@ -59,6 +59,7 @@ export const AGENT_FORMAT_MAP: Record<AgentType, FormatCategory> = {
   'tabnine': 'skill-md',
   'codegpt': 'skill-md',
   'playcode-agent': 'external',
+  'hermes': 'skill-md',
 };
 
 /**

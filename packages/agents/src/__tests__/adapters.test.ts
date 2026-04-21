@@ -35,10 +35,10 @@ const ALL_AGENTS = AgentType.options;
 
 describe('Agent Adapters', () => {
   describe('getAllAdapters', () => {
-    it('should return all 45 registered adapters', () => {
+    it('should return all 46 registered adapters', () => {
       const adapters = getAllAdapters();
       expect(adapters).toBeInstanceOf(Array);
-      expect(adapters.length).toBe(45);
+      expect(adapters.length).toBe(46);
     });
 
     it('should include common agents', () => {
@@ -138,6 +138,45 @@ describe('Agent Adapters', () => {
     it('should return an agent type', async () => {
       const agent = await detectAgent();
       expect(typeof agent).toBe('string');
+    });
+  });
+
+  describe('HermesAdapter', () => {
+    it('should generate valid XML config', () => {
+      const adapter = getAdapter('hermes');
+      const mockSkills = [
+        { name: 'test-skill', description: 'Testing', enabled: true, path: '', location: 'project' }
+      ];
+      const config = adapter.generateConfig(mockSkills as any);
+      
+      expect(config).toContain('<skills_system');
+      expect(config).toContain('<name>test-skill</name>');
+      expect(config).toContain('SKILLS_TABLE_START');
+    });
+
+    it('should parse skill names from XML correctly within markers', () => {
+      const adapter = getAdapter('hermes');
+      const xml = `
+<!-- SKILLS_TABLE_START -->
+<available_skills><skill><name>git-ops</name></skill></available_skills>
+<!-- SKILLS_TABLE_END -->`;
+      const names = adapter.parseConfig(xml);
+      expect(names).toContain('git-ops');
+    });
+
+    it('should ignore <name> tags outside of sync markers', () => {
+      const adapter = getAdapter('hermes');
+      const xml = `
+<mission><name>save-the-world</name></mission>
+<!-- SKILLS_TABLE_START -->
+<available_skills><skill><name>git-ops</name></skill></available_skills>
+<!-- SKILLS_TABLE_END -->
+<footer_meta><name>internal-id</name></footer_meta>`;
+      const names = adapter.parseConfig(xml);
+      expect(names).toHaveLength(1);
+      expect(names).toContain('git-ops');
+      expect(names).not.toContain('save-the-world');
+      expect(names).not.toContain('internal-id');
     });
   });
 });
